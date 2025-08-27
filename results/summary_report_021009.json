@@ -1,0 +1,22 @@
+{
+  "total_personas": 100,
+  "successful_simulations": 100,
+  "failed_simulations": 0,
+  "purchase_decisions": {
+    "will_not_purchase": 21,
+    "will_purchase": 79,
+    "invalid_responses": 0
+  },
+  "purchase_rate": 0.79,
+  "statistics": {
+    "total_personas": 100,
+    "successful_simulations": 100,
+    "failed_simulations": 0,
+    "purchase_decisions": {
+      "0": 21,
+      "1": 79
+    },
+    "start_time": "2025-08-28T02:10:01.692897",
+    "end_time": "2025-08-28T02:10:09.137649"
+  }
+}

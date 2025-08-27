@@ -1,0 +1,120 @@
+"""
+Main entry point for the Greek Yogurt Purchase Decision Simulation.
+Orchestrates the loading of persona data, product information, and runs LLM simulations.
+"""
+
+import asyncio
+import logging
+import sys
+import json
+from pathlib import Path
+
+from src.loader import PersonaLoader, ProductLoader
+from src.simulator import PersonaSimulator
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+        logging.FileHandler('simulation.log')
+    ]
+)
+
+logger = logging.getLogger(__name__)
+
+
+
+
+
+async def main():
+    """
+    Main execution function.
+    """
+    try:
+        logger.info("Starting Greek Yogurt Purchase Decision Simulation")
+        
+        # Initialize configuration
+        config_path = "config.yaml"
+        prompt_path = "prompt.yaml"
+        
+        # Check if config files exist
+        if not Path(config_path).exists():
+            logger.error(f"Configuration file not found: {config_path}")
+            return
+        
+        if not Path(prompt_path).exists():
+            logger.error(f"Prompt file not found: {prompt_path}")
+            return
+        
+        # Initialize loaders
+        logger.info("Initializing data loaders...")
+        persona_loader = PersonaLoader("data/persona.csv")
+        product_loader = ProductLoader("data/product_info")
+        
+        # Load personas
+        logger.info("Loading persona data...")
+        personas = persona_loader.load_all_personas()
+        
+        if not personas:
+            logger.error("No valid persona data found. Cannot proceed with simulation.")
+            return
+        
+        logger.info(f"Loaded {len(personas)} personas")
+        
+        # Load product data
+        logger.info("Loading product data...")
+        product_data = product_loader.load_greek_yogurt_data()
+        
+        if not product_data:
+            logger.error("Failed to load product data. Cannot proceed with simulation.")
+            return
+        
+        # Format market context
+        market_context = product_loader.format_market_context(product_data)
+        logger.info("Market context prepared")
+        
+        # Initialize simulator
+        logger.info("Initializing LLM simulator...")
+        simulator = PersonaSimulator(config_path, prompt_path)
+        
+        # Run simulation
+        logger.info("Starting persona simulations...")
+        results = await simulator.simulate_all_personas(personas, market_context)
+        
+        # Save results
+        logger.info("Saving simulation results...")
+        results_file = simulator.save_results(results)
+        
+        # Generate and display summary
+        summary = simulator.generate_summary_report(results)
+        
+        logger.info("=== SIMULATION SUMMARY ===")
+        logger.info(f"Total Personas: {summary['total_personas']}")
+        logger.info(f"Successful Simulations: {summary['successful_simulations']}")
+        logger.info(f"Failed Simulations: {summary['failed_simulations']}")
+        logger.info(f"Will Purchase: {summary['purchase_decisions']['will_purchase']}")
+        logger.info(f"Will Not Purchase: {summary['purchase_decisions']['will_not_purchase']}")
+        logger.info(f"Invalid Responses: {summary['purchase_decisions']['invalid_responses']}")
+        logger.info(f"Purchase Rate: {summary['purchase_rate']:.2%}")
+        logger.info(f"Results saved to: {results_file}")
+        
+        # Save summary report
+        summary_file = Path("results") / f"summary_report_{results_file.split('_')[-1]}"
+        with open(summary_file, 'w', encoding='utf-8') as f:
+            json.dump(summary, f, indent=2, ensure_ascii=False)
+        
+        logger.info(f"Summary report saved to: {summary_file}")
+        logger.info("Simulation completed successfully!")
+        
+    except KeyboardInterrupt:
+        logger.info("Simulation interrupted by user")
+    except Exception as e:
+        logger.error(f"Simulation failed with error: {e}", exc_info=True)
+        raise
+
+
+if __name__ == "__main__":
+    # Run the async main function
+    asyncio.run(main())

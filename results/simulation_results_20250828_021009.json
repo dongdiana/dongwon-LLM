@@ -1,0 +1,1820 @@
+{
+  "metadata": {
+    "simulation_time": "2025-08-28T02:10:09.137649",
+    "model_used": "gpt-4o-mini",
+    "total_personas": 100,
+    "statistics": {
+      "total_personas": 100,
+      "successful_simulations": 100,
+      "failed_simulations": 0,
+      "purchase_decisions": {
+        "0": 21,
+        "1": 79
+      },
+      "start_time": "2025-08-28T02:10:01.692897",
+      "end_time": "2025-08-28T02:10:09.137649"
+    }
+  },
+  "results": [
+    {
+      "persona_id": "57",
+      "persona": {
+        "id": "57",
+        "region": "서울",
+        "gender": "남자",
+        "education": "중졸",
+        "occupation": "무직",
+        "age": "70",
+        "household_size": "2"
+      },
+      "purchase_decision": "0",
+      "raw_response": "0",
+      "response_time": 0.7420070171356201,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:02.443904"
+    },
+    {
+      "persona_id": "25",
+      "persona": {
+        "id": "25",
+        "region": "경남",
+        "gender": "남자",
+        "education": "고졸",
+        "occupation": "무직",
+        "age": "70",
+        "household_size": "1"
+      },
+      "purchase_decision": "0",
+      "raw_response": "0",
+      "response_time": 0.7430112361907959,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:02.444908"
+    },
+    {
+      "persona_id": "24",
+      "persona": {
+        "id": "24",
+        "region": "경기",
+        "gender": "남자",
+        "education": "고졸",
+        "occupation": "단순노무종사자",
+        "age": "60",
+        "household_size": "4"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.7440104484558105,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:02.445907"
+    },
+    {
+      "persona_id": "88",
+      "persona": {
+        "id": "88",
+        "region": "전남",
+        "gender": "여자",
+        "education": "4년제 이상 대졸",
+        "occupation": "전문가",
+        "age": "50",
+        "household_size": "1"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.7549638748168945,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:02.456861"
+    },
+    {
+      "persona_id": "86",
+      "persona": {
+        "id": "86",
+        "region": "부산",
+        "gender": "여자",
+        "education": "고졸",
+        "occupation": "무직",
+        "age": "50",
+        "household_size": "2"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.7783527374267578,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:02.479250"
+    },
+    {
+      "persona_id": "23",
+      "persona": {
+        "id": "23",
+        "region": "전남",
+        "gender": "여자",
+        "education": "고졸",
+        "occupation": "단순노무종사자",
+        "age": "50",
+        "household_size": "1"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.7894854545593262,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:02.488382"
+    },
+    {
+      "persona_id": "56",
+      "persona": {
+        "id": "56",
+        "region": "전북",
+        "gender": "남자",
+        "education": "고졸",
+        "occupation": "장치기계조작 및 조립종사자",
+        "age": "50",
+        "household_size": "4"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.8108806610107422,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:02.512778"
+    },
+    {
+      "persona_id": "87",
+      "persona": {
+        "id": "87",
+        "region": "대전",
+        "gender": "여자",
+        "education": "2-3년제 대졸",
+        "occupation": "전문가",
+        "age": "40",
+        "household_size": "4"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.8744423389434814,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:02.576339"
+    },
+    {
+      "persona_id": "33",
+      "persona": {
+        "id": "33",
+        "region": "제주",
+        "gender": "남자",
+        "education": "4년제 이상 대졸",
+        "occupation": "무직",
+        "age": "20",
+        "household_size": "4"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.8835036754608154,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:02.585401"
+    },
+    {
+      "persona_id": "55",
+      "persona": {
+        "id": "55",
+        "region": "전북",
+        "gender": "남자",
+        "education": "중졸",
+        "occupation": "무직",
+        "age": "50",
+        "household_size": "2"
+      },
+      "purchase_decision": "0",
+      "raw_response": "0",
+      "response_time": 0.9390604496002197,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:02.639958"
+    },
+    {
+      "persona_id": "90",
+      "persona": {
+        "id": "90",
+        "region": "충남",
+        "gender": "여자",
+        "education": "고졸",
+        "occupation": "장치기계조작 및 조립종사자",
+        "age": "20",
+        "household_size": "3"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.5323448181152344,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:03.020727"
+    },
+    {
+      "persona_id": "89",
+      "persona": {
+        "id": "89",
+        "region": "경기",
+        "gender": "여자",
+        "education": "석사",
+        "occupation": "전문가",
+        "age": "40",
+        "household_size": "3"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6193010807037354,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:03.064209"
+    },
+    {
+      "persona_id": "58",
+      "persona": {
+        "id": "58",
+        "region": "울산",
+        "gender": "남자",
+        "education": "고졸",
+        "occupation": "사무종사자",
+        "age": "50",
+        "household_size": "3"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6499106884002686,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:03.093815"
+    },
+    {
+      "persona_id": "91",
+      "persona": {
+        "id": "91",
+        "region": "경기",
+        "gender": "남자",
+        "education": "4년제 이상 대졸",
+        "occupation": "전문가",
+        "age": "40",
+        "household_size": "2"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.5815551280975342,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:03.166956"
+    },
+    {
+      "persona_id": "27",
+      "persona": {
+        "id": "27",
+        "region": "경북",
+        "gender": "여자",
+        "education": "고졸",
+        "occupation": "무직",
+        "age": "60",
+        "household_size": "1"
+      },
+      "purchase_decision": "0",
+      "raw_response": "0",
+      "response_time": 0.6670989990234375,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:03.179877"
+    },
+    {
+      "persona_id": "28",
+      "persona": {
+        "id": "28",
+        "region": "광주",
+        "gender": "여자",
+        "education": "4년제 이상 대졸",
+        "occupation": "사무종사자",
+        "age": "40",
+        "household_size": "1"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6176466941833496,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:03.257604"
+    },
+    {
+      "persona_id": "26",
+      "persona": {
+        "id": "26",
+        "region": "서울",
+        "gender": "남자",
+        "education": "중졸",
+        "occupation": "무직",
+        "age": "60",
+        "household_size": "2"
+      },
+      "purchase_decision": "0",
+      "raw_response": "0",
+      "response_time": 0.8077542781829834,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:03.264615"
+    },
+    {
+      "persona_id": "60",
+      "persona": {
+        "id": "60",
+        "region": "인천",
+        "gender": "남자",
+        "education": "석사",
+        "occupation": "서비스종사자",
+        "age": "40",
+        "household_size": "2"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.7341198921203613,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:03.310459"
+    },
+    {
+      "persona_id": "92",
+      "persona": {
+        "id": "92",
+        "region": "인천",
+        "gender": "남자",
+        "education": "4년제 이상 대졸",
+        "occupation": "무직",
+        "age": "50",
+        "household_size": "2"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.5170669555664062,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:03.581276"
+    },
+    {
+      "persona_id": "61",
+      "persona": {
+        "id": "61",
+        "region": "부산",
+        "gender": "남자",
+        "education": "초졸",
+        "occupation": "무직",
+        "age": "10",
+        "household_size": "4"
+      },
+      "purchase_decision": "0",
+      "raw_response": "0",
+      "response_time": 0.6043641567230225,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:03.625091"
+    },
+    {
+      "persona_id": "93",
+      "persona": {
+        "id": "93",
+        "region": "경북",
+        "gender": "남자",
+        "education": "고졸",
+        "occupation": "장치기계조작 및 조립종사자",
+        "age": "50",
+        "household_size": "5"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6140866279602051,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:03.793963"
+    },
+    {
+      "persona_id": "62",
+      "persona": {
+        "id": "62",
+        "region": "인천",
+        "gender": "여자",
+        "education": "4년제 이상 대졸",
+        "occupation": "사무종사자",
+        "age": "20",
+        "household_size": "3"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6380066871643066,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:03.804962"
+    },
+    {
+      "persona_id": "29",
+      "persona": {
+        "id": "29",
+        "region": "서울",
+        "gender": "남자",
+        "education": "4년제 이상 대졸",
+        "occupation": "전문가",
+        "age": "60",
+        "household_size": "3"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.7533948421478271,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:03.847209"
+    },
+    {
+      "persona_id": "63",
+      "persona": {
+        "id": "63",
+        "region": "서울",
+        "gender": "여자",
+        "education": "4년제 이상 대졸",
+        "occupation": "무직",
+        "age": "30",
+        "household_size": "2"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6591091156005859,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:03.923724"
+    },
+    {
+      "persona_id": "30",
+      "persona": {
+        "id": "30",
+        "region": "충북",
+        "gender": "여자",
+        "education": "4년제 이상 대졸",
+        "occupation": "무직",
+        "age": "10",
+        "household_size": "3"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.7076683044433594,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:03.965272"
+    },
+    {
+      "persona_id": "94",
+      "persona": {
+        "id": "94",
+        "region": "서울",
+        "gender": "남자",
+        "education": "4년제 이상 대졸",
+        "occupation": "사무종사자",
+        "age": "50",
+        "household_size": "3"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6839051246643066,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:03.995371"
+    },
+    {
+      "persona_id": "1",
+      "persona": {
+        "id": "1",
+        "region": "경남",
+        "gender": "여자",
+        "education": "고졸",
+        "occupation": "무직",
+        "age": "40",
+        "household_size": "1"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6748113632202148,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:04.256088"
+    },
+    {
+      "persona_id": "31",
+      "persona": {
+        "id": "31",
+        "region": "서울",
+        "gender": "남자",
+        "education": "고졸",
+        "occupation": "사무종사자",
+        "age": "40",
+        "household_size": "5"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.779848575592041,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:04.404940"
+    },
+    {
+      "persona_id": "64",
+      "persona": {
+        "id": "64",
+        "region": "강원",
+        "gender": "여자",
+        "education": "고졸",
+        "occupation": "무직",
+        "age": "50",
+        "household_size": "1"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6139764785766602,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:04.407940"
+    },
+    {
+      "persona_id": "95",
+      "persona": {
+        "id": "95",
+        "region": "충북",
+        "gender": "남자",
+        "education": "중졸",
+        "occupation": "무직",
+        "age": "10",
+        "household_size": "5"
+      },
+      "purchase_decision": "0",
+      "raw_response": "0",
+      "response_time": 0.6059777736663818,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:04.410940"
+    },
+    {
+      "persona_id": "2",
+      "persona": {
+        "id": "2",
+        "region": "충남",
+        "gender": "여자",
+        "education": "4년제 이상 대졸",
+        "occupation": "무직",
+        "age": "20",
+        "household_size": "1"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6440410614013672,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:04.491251"
+    },
+    {
+      "persona_id": "59",
+      "persona": {
+        "id": "59",
+        "region": "강원",
+        "gender": "여자",
+        "education": "초졸",
+        "occupation": "무직",
+        "age": "70",
+        "household_size": "2"
+      },
+      "purchase_decision": "0",
+      "raw_response": "0",
+      "response_time": 2.0615639686584473,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:04.540814"
+    },
+    {
+      "persona_id": "0",
+      "persona": {
+        "id": "0",
+        "region": "대구",
+        "gender": "남자",
+        "education": "4년제 이상 대졸",
+        "occupation": "단순노무종사자",
+        "age": "20",
+        "household_size": "1"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 2.1212427616119385,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:04.568151"
+    },
+    {
+      "persona_id": "32",
+      "persona": {
+        "id": "32",
+        "region": "전남",
+        "gender": "여자",
+        "education": "중졸",
+        "occupation": "농림어업숙련종사자",
+        "age": "50",
+        "household_size": "2"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6612579822540283,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:04.584982"
+    },
+    {
+      "persona_id": "65",
+      "persona": {
+        "id": "65",
+        "region": "경기",
+        "gender": "남자",
+        "education": "고졸",
+        "occupation": "무직",
+        "age": "70",
+        "household_size": "1"
+      },
+      "purchase_decision": "0",
+      "raw_response": "0",
+      "response_time": 0.6987512111663818,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:04.664024"
+    },
+    {
+      "persona_id": "3",
+      "persona": {
+        "id": "3",
+        "region": "대구",
+        "gender": "여자",
+        "education": "4년제 이상 대졸",
+        "occupation": "사무종사자",
+        "age": "20",
+        "household_size": "1"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6666975021362305,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:04.922785"
+    },
+    {
+      "persona_id": "96",
+      "persona": {
+        "id": "96",
+        "region": "경기",
+        "gender": "여자",
+        "education": "고졸",
+        "occupation": "장치기계조작 및 조립종사자",
+        "age": "40",
+        "household_size": "5"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 1.0172655582427979,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:05.012636"
+    },
+    {
+      "persona_id": "34",
+      "persona": {
+        "id": "34",
+        "region": "경남",
+        "gender": "남자",
+        "education": "2-3년제 대졸",
+        "occupation": "서비스종사자",
+        "age": "30",
+        "household_size": "3"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6981863975524902,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:05.103126"
+    },
+    {
+      "persona_id": "97",
+      "persona": {
+        "id": "97",
+        "region": "경남",
+        "gender": "남자",
+        "education": "4년제 이상 대졸",
+        "occupation": "전문가",
+        "age": "50",
+        "household_size": "4"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.718367338180542,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:05.129307"
+    },
+    {
+      "persona_id": "4",
+      "persona": {
+        "id": "4",
+        "region": "서울",
+        "gender": "여자",
+        "education": "고졸",
+        "occupation": "무직",
+        "age": "10",
+        "household_size": "4"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6793375015258789,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:05.170588"
+    },
+    {
+      "persona_id": "5",
+      "persona": {
+        "id": "5",
+        "region": "경기",
+        "gender": "여자",
+        "education": "2-3년제 대졸",
+        "occupation": "무직",
+        "age": "30",
+        "household_size": "4"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.5951480865478516,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:05.259172"
+    },
+    {
+      "persona_id": "98",
+      "persona": {
+        "id": "98",
+        "region": "부산",
+        "gender": "여자",
+        "education": "4년제 이상 대졸",
+        "occupation": "전문가",
+        "age": "30",
+        "household_size": "2"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6821835041046143,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:05.268169"
+    },
+    {
+      "persona_id": "35",
+      "persona": {
+        "id": "35",
+        "region": "전남",
+        "gender": "남자",
+        "education": "2-3년제 대졸",
+        "occupation": "기능원 및 관련 기능종사자",
+        "age": "40",
+        "household_size": "2"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.7497599124908447,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:05.290574"
+    },
+    {
+      "persona_id": "67",
+      "persona": {
+        "id": "67",
+        "region": "서울",
+        "gender": "여자",
+        "education": "초졸",
+        "occupation": "단순노무종사자",
+        "age": "70",
+        "household_size": "2"
+      },
+      "purchase_decision": "0",
+      "raw_response": "0",
+      "response_time": 0.7335875034332275,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:05.301738"
+    },
+    {
+      "persona_id": "66",
+      "persona": {
+        "id": "66",
+        "region": "강원",
+        "gender": "남자",
+        "education": "4년제 이상 대졸",
+        "occupation": "기능원 및 관련 기능종사자",
+        "age": "60",
+        "household_size": "1"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.9632165431976318,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:05.371156"
+    },
+    {
+      "persona_id": "68",
+      "persona": {
+        "id": "68",
+        "region": "울산",
+        "gender": "여자",
+        "education": "2-3년제 대졸",
+        "occupation": "무직",
+        "age": "40",
+        "household_size": "3"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.5856797695159912,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:05.598316"
+    },
+    {
+      "persona_id": "36",
+      "persona": {
+        "id": "36",
+        "region": "서울",
+        "gender": "여자",
+        "education": "중졸",
+        "occupation": "무직",
+        "age": "40",
+        "household_size": "3"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6955356597900391,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:05.618321"
+    },
+    {
+      "persona_id": "6",
+      "persona": {
+        "id": "6",
+        "region": "경기",
+        "gender": "남자",
+        "education": "고졸",
+        "occupation": "단순노무종사자",
+        "age": "40",
+        "household_size": "6"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.5778415203094482,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:05.707149"
+    },
+    {
+      "persona_id": "37",
+      "persona": {
+        "id": "37",
+        "region": "부산",
+        "gender": "여자",
+        "education": "중졸",
+        "occupation": "무직",
+        "age": "60",
+        "household_size": "2"
+      },
+      "purchase_decision": "0",
+      "raw_response": "0",
+      "response_time": 0.5659377574920654,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:05.736526"
+    },
+    {
+      "persona_id": "38",
+      "persona": {
+        "id": "38",
+        "region": "경기",
+        "gender": "여자",
+        "education": "4년제 이상 대졸",
+        "occupation": "사무종사자",
+        "age": "30",
+        "household_size": "2"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.5682663917541504,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:05.859843"
+    },
+    {
+      "persona_id": "70",
+      "persona": {
+        "id": "70",
+        "region": "경기",
+        "gender": "남자",
+        "education": "4년제 이상 대졸",
+        "occupation": "장치기계조작 및 조립종사자",
+        "age": "50",
+        "household_size": "4"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6156320571899414,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:05.917370"
+    },
+    {
+      "persona_id": "8",
+      "persona": {
+        "id": "8",
+        "region": "서울",
+        "gender": "남자",
+        "education": "고졸",
+        "occupation": "기능원 및 관련 기능종사자",
+        "age": "60",
+        "household_size": "3"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.5594534873962402,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:05.930610"
+    },
+    {
+      "persona_id": "69",
+      "persona": {
+        "id": "69",
+        "region": "서울",
+        "gender": "남자",
+        "education": "4년제 이상 대졸",
+        "occupation": "무직",
+        "age": "20",
+        "household_size": "5"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6996734142303467,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:05.958845"
+    },
+    {
+      "persona_id": "7",
+      "persona": {
+        "id": "7",
+        "region": "광주",
+        "gender": "여자",
+        "education": "중졸",
+        "occupation": "무직",
+        "age": "60",
+        "household_size": "2"
+      },
+      "purchase_decision": "0",
+      "raw_response": "0",
+      "response_time": 0.7164678573608398,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:05.984637"
+    },
+    {
+      "persona_id": "99",
+      "persona": {
+        "id": "99",
+        "region": "경기",
+        "gender": "남자",
+        "education": "고졸",
+        "occupation": "무직",
+        "age": "10",
+        "household_size": "3"
+      },
+      "purchase_decision": "0",
+      "raw_response": "0",
+      "response_time": 1.0496070384979248,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:06.152733"
+    },
+    {
+      "persona_id": "71",
+      "persona": {
+        "id": "71",
+        "region": "경기",
+        "gender": "여자",
+        "education": "초졸",
+        "occupation": "무직",
+        "age": "70",
+        "household_size": "3"
+      },
+      "purchase_decision": "0",
+      "raw_response": "0",
+      "response_time": 0.6345679759979248,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:06.252889"
+    },
+    {
+      "persona_id": "39",
+      "persona": {
+        "id": "39",
+        "region": "충남",
+        "gender": "여자",
+        "education": "2-3년제 대졸",
+        "occupation": "서비스종사자",
+        "age": "40",
+        "household_size": "5"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.68263840675354,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:06.280954"
+    },
+    {
+      "persona_id": "40",
+      "persona": {
+        "id": "40",
+        "region": "부산",
+        "gender": "남자",
+        "education": "고졸",
+        "occupation": "기능원 및 관련 기능종사자",
+        "age": "40",
+        "household_size": "1"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6696569919586182,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:06.406183"
+    },
+    {
+      "persona_id": "9",
+      "persona": {
+        "id": "9",
+        "region": "인천",
+        "gender": "여자",
+        "education": "2-3년제 대졸",
+        "occupation": "무직",
+        "age": "40",
+        "household_size": "4"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.711029052734375,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:06.418178"
+    },
+    {
+      "persona_id": "72",
+      "persona": {
+        "id": "72",
+        "region": "충남",
+        "gender": "여자",
+        "education": "중졸",
+        "occupation": "서비스종사자",
+        "age": "50",
+        "household_size": "2"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.613131046295166,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:06.472974"
+    },
+    {
+      "persona_id": "41",
+      "persona": {
+        "id": "41",
+        "region": "강원",
+        "gender": "남자",
+        "education": "2-3년제 대졸",
+        "occupation": "장치기계조작 및 조립종사자",
+        "age": "60",
+        "household_size": "2"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6429135799407959,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:06.573523"
+    },
+    {
+      "persona_id": "11",
+      "persona": {
+        "id": "11",
+        "region": "경기",
+        "gender": "남자",
+        "education": "고졸",
+        "occupation": "장치기계조작 및 조립종사자",
+        "age": "40",
+        "household_size": "3"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.5958900451660156,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:06.580527"
+    },
+    {
+      "persona_id": "73",
+      "persona": {
+        "id": "73",
+        "region": "경기",
+        "gender": "남자",
+        "education": "4년제 이상 대졸",
+        "occupation": "사무종사자",
+        "age": "50",
+        "household_size": "2"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.629680871963501,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:06.588526"
+    },
+    {
+      "persona_id": "10",
+      "persona": {
+        "id": "10",
+        "region": "경기",
+        "gender": "남자",
+        "education": "고졸",
+        "occupation": "사무종사자",
+        "age": "40",
+        "household_size": "6"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.7885911464691162,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:06.705961"
+    },
+    {
+      "persona_id": "74",
+      "persona": {
+        "id": "74",
+        "region": "경기",
+        "gender": "여자",
+        "education": "4년제 이상 대졸",
+        "occupation": "사무종사자",
+        "age": "30",
+        "household_size": "4"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6004719734191895,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:06.853361"
+    },
+    {
+      "persona_id": "42",
+      "persona": {
+        "id": "42",
+        "region": "울산",
+        "gender": "여자",
+        "education": "고졸",
+        "occupation": "무직",
+        "age": "10",
+        "household_size": "4"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.7490167617797852,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:06.901750"
+    },
+    {
+      "persona_id": "12",
+      "persona": {
+        "id": "12",
+        "region": "경북",
+        "gender": "여자",
+        "education": "고졸",
+        "occupation": "서비스종사자",
+        "age": "50",
+        "household_size": "1"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.654801607131958,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:06.935756"
+    },
+    {
+      "persona_id": "43",
+      "persona": {
+        "id": "43",
+        "region": "경기",
+        "gender": "여자",
+        "education": "고졸",
+        "occupation": "사무종사자",
+        "age": "40",
+        "household_size": "1"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6255419254302979,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:07.031725"
+    },
+    {
+      "persona_id": "13",
+      "persona": {
+        "id": "13",
+        "region": "경기",
+        "gender": "남자",
+        "education": "고졸",
+        "occupation": "서비스종사자",
+        "age": "40",
+        "household_size": "4"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6132278442382812,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:07.086202"
+    },
+    {
+      "persona_id": "75",
+      "persona": {
+        "id": "75",
+        "region": "인천",
+        "gender": "여자",
+        "education": "초졸",
+        "occupation": "무직",
+        "age": "70",
+        "household_size": "2"
+      },
+      "purchase_decision": "0",
+      "raw_response": "0",
+      "response_time": 0.7006392478942871,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:07.118817"
+    },
+    {
+      "persona_id": "76",
+      "persona": {
+        "id": "76",
+        "region": "경기",
+        "gender": "여자",
+        "education": "초졸",
+        "occupation": "무직",
+        "age": "10",
+        "household_size": "4"
+      },
+      "purchase_decision": "0",
+      "raw_response": "0",
+      "response_time": 0.565831184387207,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:07.146358"
+    },
+    {
+      "persona_id": "45",
+      "persona": {
+        "id": "45",
+        "region": "경기",
+        "gender": "여자",
+        "education": "고졸",
+        "occupation": "무직",
+        "age": "60",
+        "household_size": "2"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6484904289245605,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:07.354452"
+    },
+    {
+      "persona_id": "14",
+      "persona": {
+        "id": "14",
+        "region": "대전",
+        "gender": "여자",
+        "education": "고졸",
+        "occupation": "무직",
+        "age": "60",
+        "household_size": "1"
+      },
+      "purchase_decision": "0",
+      "raw_response": "0",
+      "response_time": 0.7869977951049805,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:07.375524"
+    },
+    {
+      "persona_id": "77",
+      "persona": {
+        "id": "77",
+        "region": "울산",
+        "gender": "여자",
+        "education": "2-3년제 대졸",
+        "occupation": "무직",
+        "age": "50",
+        "household_size": "1"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.7214260101318359,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:07.574787"
+    },
+    {
+      "persona_id": "15",
+      "persona": {
+        "id": "15",
+        "region": "서울",
+        "gender": "여자",
+        "education": "4년제 이상 대졸",
+        "occupation": "판매종사자",
+        "age": "40",
+        "household_size": "4"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6730365753173828,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:07.574787"
+    },
+    {
+      "persona_id": "16",
+      "persona": {
+        "id": "16",
+        "region": "경기",
+        "gender": "남자",
+        "education": "2-3년제 대졸",
+        "occupation": "사무종사자",
+        "age": "40",
+        "household_size": "3"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.5860707759857178,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:07.672273"
+    },
+    {
+      "persona_id": "78",
+      "persona": {
+        "id": "78",
+        "region": "경남",
+        "gender": "남자",
+        "education": "고졸",
+        "occupation": "기능원 및 관련 기능종사자",
+        "age": "50",
+        "household_size": "2"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.739316463470459,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:07.771041"
+    },
+    {
+      "persona_id": "79",
+      "persona": {
+        "id": "79",
+        "region": "경남",
+        "gender": "여자",
+        "education": "고졸",
+        "occupation": "장치기계조작 및 조립종사자",
+        "age": "50",
+        "household_size": "1"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6690411567687988,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:07.815400"
+    },
+    {
+      "persona_id": "47",
+      "persona": {
+        "id": "47",
+        "region": "서울",
+        "gender": "여자",
+        "education": "4년제 이상 대졸",
+        "occupation": "사무종사자",
+        "age": "40",
+        "household_size": "3"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.7288393974304199,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:07.847657"
+    },
+    {
+      "persona_id": "44",
+      "persona": {
+        "id": "44",
+        "region": "경기",
+        "gender": "남자",
+        "education": "고졸",
+        "occupation": "기능원 및 관련 기능종사자",
+        "age": "50",
+        "household_size": "3"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 1.3339016437530518,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:07.908471"
+    },
+    {
+      "persona_id": "17",
+      "persona": {
+        "id": "17",
+        "region": "서울",
+        "gender": "남자",
+        "education": "4년제 이상 대졸",
+        "occupation": "사무종사자",
+        "age": "50",
+        "household_size": "3"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6594293117523193,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:08.013881"
+    },
+    {
+      "persona_id": "80",
+      "persona": {
+        "id": "80",
+        "region": "경남",
+        "gender": "여자",
+        "education": "초졸",
+        "occupation": "무직",
+        "age": "10",
+        "household_size": "4"
+      },
+      "purchase_decision": "0",
+      "raw_response": "0",
+      "response_time": 0.5376620292663574,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:08.112449"
+    },
+    {
+      "persona_id": "46",
+      "persona": {
+        "id": "46",
+        "region": "경북",
+        "gender": "남자",
+        "education": "2-3년제 대졸",
+        "occupation": "장치기계조작 및 조립종사자",
+        "age": "40",
+        "household_size": "4"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 1.1988258361816406,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:08.134582"
+    },
+    {
+      "persona_id": "48",
+      "persona": {
+        "id": "48",
+        "region": "경기",
+        "gender": "남자",
+        "education": "고졸",
+        "occupation": "단순노무종사자",
+        "age": "60",
+        "household_size": "1"
+      },
+      "purchase_decision": "0",
+      "raw_response": "0",
+      "response_time": 0.7833552360534668,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:08.158879"
+    },
+    {
+      "persona_id": "18",
+      "persona": {
+        "id": "18",
+        "region": "서울",
+        "gender": "여자",
+        "education": "고졸",
+        "occupation": "사무종사자",
+        "age": "20",
+        "household_size": "3"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.5881025791168213,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:08.163884"
+    },
+    {
+      "persona_id": "49",
+      "persona": {
+        "id": "49",
+        "region": "대구",
+        "gender": "남자",
+        "education": "4년제 이상 대졸",
+        "occupation": "기능원 및 관련 기능종사자",
+        "age": "20",
+        "household_size": "4"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.635260820388794,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:08.307533"
+    },
+    {
+      "persona_id": "81",
+      "persona": {
+        "id": "81",
+        "region": "부산",
+        "gender": "남자",
+        "education": "4년제 이상 대졸",
+        "occupation": "장치기계조작 및 조립종사자",
+        "age": "20",
+        "household_size": "2"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6301510334014893,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:08.401192"
+    },
+    {
+      "persona_id": "19",
+      "persona": {
+        "id": "19",
+        "region": "부산",
+        "gender": "남자",
+        "education": "고졸",
+        "occupation": "무직",
+        "age": "30",
+        "household_size": "1"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6122913360595703,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:08.427691"
+    },
+    {
+      "persona_id": "50",
+      "persona": {
+        "id": "50",
+        "region": "경기",
+        "gender": "여자",
+        "education": "고졸",
+        "occupation": "판매종사자",
+        "age": "50",
+        "household_size": "1"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.652442455291748,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:08.500099"
+    },
+    {
+      "persona_id": "82",
+      "persona": {
+        "id": "82",
+        "region": "경기",
+        "gender": "남자",
+        "education": "4년제 이상 대졸",
+        "occupation": "사무종사자",
+        "age": "30",
+        "household_size": "3"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6276366710662842,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:08.537109"
+    },
+    {
+      "persona_id": "20",
+      "persona": {
+        "id": "20",
+        "region": "경북",
+        "gender": "남자",
+        "education": "고졸",
+        "occupation": "장치기계조작 및 조립종사자",
+        "age": "30",
+        "household_size": "3"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.5952115058898926,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:08.609092"
+    },
+    {
+      "persona_id": "21",
+      "persona": {
+        "id": "21",
+        "region": "경기",
+        "gender": "여자",
+        "education": "고졸",
+        "occupation": "무직",
+        "age": "50",
+        "household_size": "4"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6032869815826416,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:08.762166"
+    },
+    {
+      "persona_id": "51",
+      "persona": {
+        "id": "51",
+        "region": "충북",
+        "gender": "남자",
+        "education": "2-3년제 대졸",
+        "occupation": "판매종사자",
+        "age": "50",
+        "household_size": "3"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6537165641784668,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:08.766165"
+    },
+    {
+      "persona_id": "83",
+      "persona": {
+        "id": "83",
+        "region": "경기",
+        "gender": "남자",
+        "education": "2-3년제 대졸",
+        "occupation": "장치기계조작 및 조립종사자",
+        "age": "20",
+        "household_size": "2"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.654200553894043,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:08.788782"
+    },
+    {
+      "persona_id": "52",
+      "persona": {
+        "id": "52",
+        "region": "충남",
+        "gender": "남자",
+        "education": "중졸",
+        "occupation": "무직",
+        "age": "60",
+        "household_size": "2"
+      },
+      "purchase_decision": "0",
+      "raw_response": "0",
+      "response_time": 0.7310042381286621,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:08.894889"
+    },
+    {
+      "persona_id": "22",
+      "persona": {
+        "id": "22",
+        "region": "경기",
+        "gender": "여자",
+        "education": "고졸",
+        "occupation": "무직",
+        "age": "20",
+        "household_size": "1"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.5879867076873779,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:08.989179"
+    },
+    {
+      "persona_id": "84",
+      "persona": {
+        "id": "84",
+        "region": "경남",
+        "gender": "여자",
+        "education": "석사",
+        "occupation": "전문가",
+        "age": "40",
+        "household_size": "1"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.7254970073699951,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:09.033030"
+    },
+    {
+      "persona_id": "53",
+      "persona": {
+        "id": "53",
+        "region": "대전",
+        "gender": "남자",
+        "education": "4년제 이상 대졸",
+        "occupation": "서비스종사자",
+        "age": "50",
+        "household_size": "4"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6293759346008301,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:09.057067"
+    },
+    {
+      "persona_id": "54",
+      "persona": {
+        "id": "54",
+        "region": "경기",
+        "gender": "남자",
+        "education": "고졸",
+        "occupation": "무직",
+        "age": "60",
+        "household_size": "4"
+      },
+      "purchase_decision": "0",
+      "raw_response": "0",
+      "response_time": 0.5940670967102051,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:09.131176"
+    },
+    {
+      "persona_id": "85",
+      "persona": {
+        "id": "85",
+        "region": "부산",
+        "gender": "남자",
+        "education": "4년제 이상 대졸",
+        "occupation": "사무종사자",
+        "age": "40",
+        "household_size": "4"
+      },
+      "purchase_decision": "1",
+      "raw_response": "1",
+      "response_time": 0.6365516185760498,
+      "success": true,
+      "error": null,
+      "timestamp": "2025-08-28T02:10:09.136651"
+    }
+  ]
+}

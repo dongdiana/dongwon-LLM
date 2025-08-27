@@ -1,0 +1,24 @@
+# LLM Configuration
+llm:
+  model_name: "gpt-4o-mini"
+  temperature: 0.7
+  timeout: 30
+
+# Simulation Configuration
+simulation:
+  output_format: "json"
+  save_detailed_logs: true
+  batch_size: 10  # Number of concurrent requests
+  
+# File Paths
+paths:
+  persona_data_dir: "data/persona_info"
+  product_data_dir: "data/product_info"
+  results_dir: "results"
+  prompt_file: "prompt.yaml"
+
+# OpenAI API Configuration
+openai:
+  api_base: "https://api.openai.com/v1"
+  max_retries: 3
+  retry_delay: 1
