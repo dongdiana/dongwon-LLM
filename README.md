@@ -6,23 +6,13 @@ A sophisticated LLM-based simulation system that predicts Greek yogurt purchase 
 
 This project leverages OpenAI's GPT-4o-mini model through LangChain to simulate consumer behavior and predict purchase decisions for Greek yogurt products. Each persona is independently evaluated based on their unique characteristics including region, gender, age, education, occupation, and household size.
 
-### Key Features
-
-- **Persona-Based Simulation**: Simulate purchase decisions for various consumer personas
-- **Asynchronous Processing**: Efficient batch processing with configurable concurrency
-- **Comprehensive Logging**: Detailed logging and progress tracking
-- **Flexible Data Loading**: Support for JSONL persona files and JSON product data
-- **Robust Error Handling**: Graceful handling of API failures and invalid responses
-- **Detailed Reporting**: Generate comprehensive simulation reports and statistics
-
 ## Project Structure
 
 ```
 dongwon/
 ├── data/
-│   ├── persona_info/           # Persona data (JSONL files)
-│   │   └── *.jsonl            # Persona characteristics files
-│   └── product_info/          # Product market information
+│   ├── persona.csv           # Persona characteristics files
+│   └── product_info/         # Product market information
 │       └── 그릭요거트.json     # Greek yogurt market data
 ├── src/
 │   ├── loader.py             # Data loading utilities
@@ -79,11 +69,12 @@ The system will:
 
 ### Persona Data Format
 
-Create JSONL files in `data/persona_info/` with the following format:
+Create CSV files in `data/` with the following format:
 
-```jsonl
-{"id": "0", "region": "서울", "gender": "남자", "age": "25", "education": "대학교 졸업", "occupation": "회사원", "household_size": "1인 가구"}
-{"id": "1", "region": "경기도", "gender": "여자", "age": "35", "education": "대학원 졸업", "occupation": "전문직", "household_size": "3인 가구"}
+```csv
+id,지역,성별,학력,직업,연령대,가구원수
+0,대구,남자,4년제 이상 대졸,단순노무종사자,20,1
+1,경남,여자,고졸,무직,40,1
 ```
 
 ### Configuration Options
@@ -164,47 +155,16 @@ Each persona simulation returns:
 
 ### Data Loading (`src/loader.py`)
 
-- **`PersonaLoader`**: Loads and validates JSONL persona files
+- **`PersonaLoader`**: Loads and validates CSV persona files
 - **`ProductLoader`**: Processes Greek yogurt market data
-- Robust error handling and data validation
 
 ### LLM Simulation (`src/simulator.py`)
 
 - **`PersonaSimulator`**: Core simulation engine
 - Asynchronous processing with configurable concurrency
 - Intelligent prompt formatting based on available persona attributes
-- Comprehensive error handling and retry logic
 
-### Key Features
-
-1. **Adaptive Prompting**: Uses full or minimal templates based on available persona data
-2. **Batch Processing**: Configurable concurrent request limits
-3. **Progress Tracking**: Real-time progress bars using tqdm
-4. **Robust Parsing**: Intelligent extraction of purchase decisions from LLM responses
-5. **Comprehensive Logging**: Detailed logs for debugging and monitoring
-
-## Error Handling
-
-The system handles various error scenarios:
-
-- **Missing API Key**: Clear error message with setup instructions
-- **Invalid Persona Data**: Validation and warning messages
-- **API Failures**: Retry logic with exponential backoff
-- **Malformed Responses**: Robust parsing with fallback strategies
-- **File I/O Errors**: Graceful handling with informative error messages
-
-## Sample Data
-
-If no persona files are found, the system automatically creates sample data with 5 diverse personas for demonstration purposes.
-
-## Monitoring & Debugging
-
-### Log Files
-
-- **Console Output**: Real-time progress and status updates
-- **`simulation.log`**: Detailed file-based logging for debugging
-
-### Statistics Tracking
+## Tracking
 
 The system tracks comprehensive statistics:
 - Total personas processed
@@ -221,11 +181,3 @@ The system tracks comprehensive statistics:
 - **python-dotenv**: Environment variable management
 - **tqdm**: Progress bar visualization
 - **aiohttp**: Asynchronous HTTP requests
-
-## License
-
-This project is proprietary software developed for Greek yogurt market research purposes.
-
-## Support
-
-For technical support or questions about the simulation results, please refer to the log files and error messages for detailed diagnostics.
