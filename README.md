@@ -62,7 +62,7 @@ python main.py
 ```
 
 The system will:
-1. Load persona data from `data/persona_info/` (creates sample data if none exists)
+1. Load persona data from `data/persona.csv`
 2. Load Greek yogurt market information
 3. Run LLM simulations for each persona
 4. Generate and save detailed results
