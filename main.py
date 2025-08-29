@@ -1,5 +1,5 @@
 """
-Main entry point for the Greek Yogurt Purchase Decision Simulation.
+Main entry point for the Product Purchase Decision Simulation.
 Orchestrates the loading of persona data, product information, and runs LLM simulations.
 """
 
@@ -7,9 +7,10 @@ import asyncio
 import logging
 import sys
 import json
+import yaml
 from pathlib import Path
 
-from src.loader import PersonaLoader, ProductLoader
+from src.loader import PersonaLoader
 from src.simulator import PersonaSimulator
 
 # Configure logging
@@ -33,7 +34,7 @@ async def main():
     Main execution function.
     """
     try:
-        logger.info("Starting Greek Yogurt Purchase Decision Simulation")
+        logger.info("Starting Product Purchase Decision Simulation")
         
         # Initialize configuration
         config_path = "config.yaml"
@@ -48,10 +49,16 @@ async def main():
             logger.error(f"Prompt file not found: {prompt_path}")
             return
         
+        # Load configuration
+        logger.info("Loading configuration...")
+        with open(config_path, 'r', encoding='utf-8') as f:
+            config = yaml.safe_load(f)
+        
         # Initialize loaders
         logger.info("Initializing data loaders...")
-        persona_loader = PersonaLoader("data/persona.csv")
-        product_loader = ProductLoader("data/product_info")
+        persona_data_dir = config["paths"]["persona_data_dir"]
+        persona_filename = config["persona"]["filename"]
+        persona_loader = PersonaLoader(persona_data_dir, persona_filename)
         
         # Load personas
         logger.info("Loading persona data...")
@@ -63,25 +70,13 @@ async def main():
         
         logger.info(f"Loaded {len(personas)} personas")
         
-        # Load product data
-        logger.info("Loading product data...")
-        product_data = product_loader.load_greek_yogurt_data()
-        
-        if not product_data:
-            logger.error("Failed to load product data. Cannot proceed with simulation.")
-            return
-        
-        # Format market context
-        market_context = product_loader.format_market_context(product_data)
-        logger.info("Market context prepared")
-        
         # Initialize simulator
         logger.info("Initializing LLM simulator...")
         simulator = PersonaSimulator(config_path, prompt_path)
         
         # Run simulation
         logger.info("Starting persona simulations...")
-        results = await simulator.simulate_all_personas(personas, market_context)
+        results = await simulator.simulate_all_personas(personas)
         
         # Save results
         logger.info("Saving simulation results...")
@@ -98,6 +93,22 @@ async def main():
         logger.info(f"Will Not Purchase: {summary['purchase_decisions']['will_not_purchase']}")
         logger.info(f"Invalid Responses: {summary['purchase_decisions']['invalid_responses']}")
         logger.info(f"Purchase Rate: {summary['purchase_rate']:.2%}")
+        
+        # Display demographic breakdowns
+        logger.info("\n=== DEMOGRAPHIC BREAKDOWN ===")
+        
+        # Gender breakdown
+        logger.info("Gender Analysis:")
+        for gender, data in summary['demographic_breakdown']['by_gender'].items():
+            logger.info(f"  {gender}: Purchase={data['will_purchase']}, No Purchase={data['will_not_purchase']}, "
+                       f"Rate={data['purchase_rate']:.2%}")
+        
+        # Age breakdown
+        logger.info("Age Analysis:")
+        for age, data in summary['demographic_breakdown']['by_age'].items():
+            logger.info(f"  {age}: Purchase={data['will_purchase']}, No Purchase={data['will_not_purchase']}, "
+                       f"Rate={data['purchase_rate']:.2%}")
+        
         logger.info(f"Results saved to: {results_file}")
         
         # Save summary report

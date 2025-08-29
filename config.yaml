@@ -1,7 +1,7 @@
 # LLM Configuration
 llm:
   model_name: "gpt-4o-mini"
-  temperature: 0.7
+  temperature: 0.3
   timeout: 30
 
 # Simulation Configuration
@@ -12,10 +12,18 @@ simulation:
   
 # File Paths
 paths:
-  persona_data_dir: "data/persona_info"
+  persona_data_dir: "data"
   product_data_dir: "data/product_info"
   results_dir: "results"
   prompt_file: "prompt.yaml"
+
+# Persona Configuration
+persona:
+  filename: "persona"  # Persona filename in data/ (.csv extension will be auto-added)
+
+# Product Configuration
+product:
+  filename: "그릭요거트"  # Product info filename in data/product_info/ (.json extension will be auto-added)
 
 # OpenAI API Configuration
 openai:

@@ -1,10 +1,10 @@
-# Greek Yogurt Purchase Decision Simulation
+# Product Purchase Decision Simulation
 
-A sophisticated LLM-based simulation system that predicts Greek yogurt purchase decisions across diverse consumer personas using demographic and psychographic characteristics.
+A sophisticated LLM-based simulation system that predicts product purchase decisions across diverse consumer personas using demographic and psychographic characteristics. The system is designed to work with various food products and consumer goods.
 
 ## Project Overview
 
-This project leverages OpenAI's GPT-4o-mini model through LangChain to simulate consumer behavior and predict purchase decisions for Greek yogurt products. Each persona is independently evaluated based on their unique characteristics including region, gender, age, education, occupation, and household size.
+This project leverages OpenAI's GPT-4o-mini model through LangChain to simulate consumer behavior and predict purchase decisions for various products. Each persona is independently evaluated based on their unique characteristics including gender, age, household size, and income level.
 
 ## Project Structure
 
@@ -12,8 +12,10 @@ This project leverages OpenAI's GPT-4o-mini model through LangChain to simulate 
 dongwon/
 ├── data/
 │   ├── persona.csv           # Persona characteristics files
-│   └── product_info/         # Product market information
-│       └── 그릭요거트.json     # Greek yogurt market data
+│   ├── product_info/         # Product market information
+│   │   └── 그릭요거트.json     # Product market data (example: Greek yogurt)
+│   └── naver_trend/          # Naver search trend data
+│       └── 그릭요거트.json     # Search trend data by gender and age
 ├── src/
 │   ├── loader.py             # Data loading utilities
 │   └── simulator.py          # LLM simulation engine
@@ -63,18 +65,28 @@ python main.py
 
 The system will:
 1. Load persona data from `data/persona.csv`
-2. Load Greek yogurt market information
-3. Run LLM simulations for each persona
+2. Load product market information based on configuration
+3. Run LLM simulations for each persona with automatic rate limiting
 4. Generate and save detailed results
+
+## Rate Limiting
+
+To prevent API rate limit issues, the system automatically applies pacing:
+
+- **5-second break** after every 10 requests
+- **60-second break** after every 100 requests
+
+This ensures stable processing and prevents OpenAI API throttling. The system will log these breaks in the console for transparency.
 
 ### Persona Data Format
 
 Create CSV files in `data/` with the following format:
 
 ```csv
-id,지역,성별,학력,직업,연령대,가구원수
-0,대구,남자,4년제 이상 대졸,단순노무종사자,20,1
-1,경남,여자,고졸,무직,40,1
+id,성별,연령대,가구원수,소득구간
+16115,여성,40대,3인가구 이상,중간소득(월 300~700만원 미만)
+19821,여성,60대,2인가구,저소득(월 300만원 미만)
+6526,남성,30대,3인가구 이상,중간소득(월 300~700만원 미만)
 ```
 
 ### Configuration Options
@@ -91,13 +103,84 @@ llm:
 simulation:
   batch_size: 10               # Concurrent requests
   save_detailed_logs: true     # Enable detailed logging
+
+# Product Configuration
+product:
+  filename: "그릭요거트"         # Product info filename (auto-adds .json)
 ```
 
 #### Prompt Customization (`prompt.yaml`)
 
 - **`system_prompt`**: Instructions for the LLM persona simulation
-- **`user_prompt_template`**: Template with persona characteristics
-- **`minimal_prompt_template`**: Fallback for incomplete persona data
+- **`user_prompt_template`**: Template for purchase questions
+
+#### Product Configuration
+
+To simulate different products, update the product configuration in `config.yaml`:
+
+```yaml
+product:
+  filename: "product_name"  # Without .json extension
+```
+
+Then create a corresponding JSON file in `data/product_info/product_name.json` with:
+
+```json
+{
+  "product_name": {
+    "product_info": {
+      "content": ["Product description and features..."]
+    }
+  },
+  "market_report": {
+    "content": ["Market analysis and context..."]
+  }
+}
+```
+
+**Examples:**
+- Greek Yogurt: `filename: "그릭요거트"`
+- Instant Noodles: `filename: "라면"`
+- Energy Drinks: `filename: "에너지드링크"`
+
+#### Naver Trend Data (Optional)
+
+To include search trend analysis in the market context, add a corresponding JSON file in `data/naver_trend/{product}.json`:
+
+```json
+{
+  "gender": {
+    "2023-01-01": {"f": 60.48, "m": 44.65},
+    "2023-02-01": {"f": 66.45, "m": 52.89},
+    ...
+  },
+  "age": {
+    "2023-01-01": {"20": 73.74, "30": 68.73, "40": 45.97, "50": 20.28, "60": 6.11},
+    "2023-02-01": {"20": 67.23, "30": 69.73, "40": 51.60, "50": 24.94, "60": 8.12},
+    ...
+  }
+}
+```
+
+The system will automatically:
+- Load trend data if available
+- Calculate cumulative shares by gender and age
+- Add trend insights to the market context
+- Support time-decay weighting (optional)
+
+**Preprocessing Raw Trend Data:**
+
+If you have raw Naver trend data, use the preprocessing script to convert it:
+
+```bash
+# Process a specific product
+python data/naver_trend/preprocessing.py 그릭요거트
+
+# Process all files in data/naver_trend/raw/
+python data/naver_trend/preprocessing.py
+```
+
+This converts `data/naver_trend/raw/{product}.json` to `data/naver_trend/{product}.json` format.
 
 ## Output Files
 
@@ -148,21 +231,27 @@ simulation:
 ## Response Format
 
 Each persona simulation returns:
-- **`0`**: Will not purchase Greek yogurt
-- **`1`**: Will purchase Greek yogurt
+- **`0`**: Will not purchase the product
+- **`1`**: Will purchase the product
+- **`reasoning`**: Explanation for the decision
+
+Structured response format: `decision_number, reasoning_explanation`
 
 ## Technical Implementation
 
 ### Data Loading (`src/loader.py`)
 
 - **`PersonaLoader`**: Loads and validates CSV persona files
-- **`ProductLoader`**: Processes Greek yogurt market data
+- **`ProductLoader`**: Processes product market data
 
 ### LLM Simulation (`src/simulator.py`)
 
 - **`PersonaSimulator`**: Core simulation engine
 - Asynchronous processing with configurable concurrency
 - Intelligent prompt formatting based on available persona attributes
+- Automatic **product market context** loading and **Naver search trend** extraction
+- Includes search trend analysis by gender and age
+- Structured response parsing for decision and reasoning
 
 ## Tracking
 

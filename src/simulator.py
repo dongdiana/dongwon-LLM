@@ -1,5 +1,5 @@
-"""
-LLM Simulation module for persona-based Greek yogurt purchase decisions.
+"""  
+LLM Simulation module for persona-based product purchase decisions.
 Uses LangChain and OpenAI GPT models for simulation.
 """
 
@@ -7,6 +7,7 @@ import asyncio
 import json
 import logging
 import os
+import re
 import time
 from datetime import datetime
 from pathlib import Path
@@ -18,6 +19,8 @@ from langchain.schema import HumanMessage, SystemMessage
 from dotenv import load_dotenv
 from tqdm import asyncio as tqdm_asyncio
 
+from .loader import ProductLoader
+
 # Load environment variables
 load_dotenv()
 
@@ -27,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 class PersonaSimulator:
     """
-    Simulates persona-based purchase decisions using LLM.
+    Simulates persona-based product purchase decisions using LLM.
     """
     
     def __init__(self, config_path: str = "config.yaml", prompt_path: str = "prompt.yaml"):
@@ -40,6 +43,17 @@ class PersonaSimulator:
         """
         self.config = self._load_config(config_path)
         self.prompts = self._load_prompts(prompt_path)
+        
+        # Initialize product loader
+        self.product_loader = ProductLoader(self.config["paths"]["product_data_dir"])
+        
+        # Load product data
+        self.product_info = self.product_loader.load_product_data(self.config["product"]["filename"])
+        
+        # Load Naver trend data once during initialization
+        self.naver_trend_data = self.product_loader.load_naver_trend_data(self.config["product"]["filename"])
+        logger.info(f"Loaded trend data for product: {self.config['product']['filename']}")
+        
         self.llm = self._initialize_llm()
         
         # Ensure results directory exists
@@ -55,6 +69,30 @@ class PersonaSimulator:
             "start_time": None,
             "end_time": None
         }
+
+        # Rate limiting tracking
+        self.request_counter = 0
+
+    def _apply_rate_limiting(self):
+        """
+        Apply rate limiting based on request count.
+        - Wait 5 seconds after every 10 requests
+        - Wait 60 seconds after every 100 requests
+        """
+        self.request_counter += 1
+
+        # Check for 100-request interval
+        if self.request_counter % 100 == 0:
+            wait_time = 60  # 1 minute
+            logger.info(f"Rate limit: Completed {self.request_counter} requests. Taking {wait_time}s break...")
+            time.sleep(wait_time)
+            logger.info("Rate limit break completed. Resuming simulation...")
+
+        # Check for 10-request interval (but not also divisible by 100)
+        elif self.request_counter % 10 == 0:
+            wait_time = 5  # 5 seconds
+            logger.info(f"Rate limit: Completed {self.request_counter} requests. Taking {wait_time}s break...")
+            time.sleep(wait_time)
     
     def _load_config(self, config_path: str) -> Dict[str, Any]:
         """Load configuration from YAML file."""
@@ -78,6 +116,8 @@ class PersonaSimulator:
             logger.error(f"Error loading prompts: {e}")
             raise
     
+
+    
     def _initialize_llm(self) -> ChatOpenAI:
         """Initialize the LangChain LLM."""
         llm_config = self.config["llm"]
@@ -98,31 +138,67 @@ class PersonaSimulator:
         logger.info(f"Initialized LLM: {llm_config['model_name']}")
         return llm
     
-    def _format_persona_prompt(self, persona: Dict[str, Any], market_context: str) -> Tuple[str, str]:
+    def _format_persona_prompt(self, persona: Dict[str, Any], market_context: str, search_summary: str) -> Tuple[str, str]:
         """
-        Format the user prompt with persona information.
+        Format the prompts with persona information, market context, and search summary.
         
         Args:
             persona: Persona dictionary with demographic info
-            market_context: Greek yogurt market information
+            market_context: Product market information
+            search_summary: Search trend analysis data
             
         Returns:
             Tuple of (system_prompt, user_prompt)
         """
-        # Use the standard template with all required fields
-        user_prompt = self.prompts["user_prompt_template"].format(
+        # Extract product name from product info
+        product_name = self._get_product_name()
+        
+        # Format system prompt with all required variables
+        system_prompt = self.prompts["system_prompt"].format(
             age=persona["age"],
             gender=persona["gender"],
-            region=persona["region"],
-            education=persona["education"],
-            occupation=persona["occupation"],
+            income=persona["income"],
             household_size=persona["household_size"],
-            market_context=market_context
+            product_name=product_name,
+            market_context=market_context,
+            search_summary=search_summary
         )
         
-        return self.prompts["system_prompt"], user_prompt
+        # Format user prompt with product name
+        user_prompt = self.prompts["user_prompt"].format(
+            product_name=product_name
+        )
+        
+        return system_prompt, user_prompt
     
-    async def _simulate_single_persona(self, persona: Dict[str, Any], market_context: str) -> Dict[str, Any]:
+    def _get_product_name(self) -> str:
+        """Get the product name from config filename."""
+        # Use filename from config directly as the product name
+        filename = self.config["product"]["filename"]
+        # Remove .json extension if present
+        if filename.endswith('.json'):
+            return filename[:-5]
+        return filename
+    
+    def _get_market_context(self) -> str:
+        """Extract market context from product info only (excludes search/trend data)."""
+        return self.product_loader.format_market_context(self.product_info)
+    
+    def _get_search_summary(self) -> str:
+        """
+        Extract Naver trend data and format it as search summary.
+        Uses cached trend data loaded during initialization.
+        
+        Returns:
+            Formatted string with search trend analysis
+        """
+        # Get product name for formatting
+        product_name = self._get_product_name()
+        
+        # Format the cached data using the loader
+        return self.product_loader.format_search_summary(self.naver_trend_data, product_name)
+    
+    async def _simulate_single_persona(self, persona: Dict[str, Any], market_context: Optional[str] = None) -> Dict[str, Any]:
         """
         Simulate purchase decision for a single persona.
         
@@ -136,8 +212,15 @@ class PersonaSimulator:
         persona_id = persona.get("id", "unknown")
         
         try:
-            # Format prompts
-            system_prompt, user_prompt = self._format_persona_prompt(persona, market_context)
+            # Use provided market context or extract from product info
+            if market_context is None:
+                market_context = self._get_market_context()
+            
+            # Get search summary separately
+            search_summary = self._get_search_summary()
+            
+            # Format prompts with all required data
+            system_prompt, user_prompt = self._format_persona_prompt(persona, market_context, search_summary)
             
             # Create messages
             messages = [
@@ -149,15 +232,19 @@ class PersonaSimulator:
             start_time = time.time()
             response = await self.llm.ainvoke(messages)
             end_time = time.time()
-            
+
+            # Apply rate limiting after successful API call
+            self._apply_rate_limiting()
+
             # Extract and validate response
             response_text = response.content.strip()
-            purchase_decision = self._parse_purchase_decision(response_text)
+            purchase_decision, reasoning = self._parse_purchase_decision(response_text)
             
             result = {
                 "persona_id": persona_id,
                 "persona": persona,
                 "purchase_decision": purchase_decision,
+                "reasoning": reasoning,
                 "raw_response": response_text,
                 "response_time": end_time - start_time,
                 "success": True,
@@ -176,11 +263,15 @@ class PersonaSimulator:
         except Exception as e:
             logger.error(f"Error simulating persona {persona_id}: {e}")
             self.simulation_stats["failed_simulations"] += 1
-            
+
+            # Apply rate limiting even on failed requests to maintain consistent pacing
+            self._apply_rate_limiting()
+
             return {
                 "persona_id": persona_id,
                 "persona": persona,
                 "purchase_decision": None,
+                "reasoning": None,
                 "raw_response": None,
                 "response_time": None,
                 "success": False,
@@ -188,41 +279,52 @@ class PersonaSimulator:
                 "timestamp": datetime.now().isoformat()
             }
     
-    def _parse_purchase_decision(self, response: str) -> Optional[str]:
+    def _parse_purchase_decision(self, response: str) -> Tuple[Optional[str], Optional[str]]:
         """
-        Parse the LLM response to extract purchase decision.
+        Parse the LLM response to extract purchase decision and reasoning.
         
         Args:
             response: Raw LLM response text
             
         Returns:
-            "0" for no purchase, "1" for purchase, None if invalid
+            Tuple of (decision, reasoning) where decision is "0"/"1" or None if invalid
         """
         # Clean the response
-        cleaned = response.strip().lower()
+        cleaned = response.strip()
         
-        # Direct matches
-        if cleaned == "0":
-            return "0"
-        elif cleaned == "1":
-            return "1"
+        # Try to match pattern: "number, reasoning" or "number reasoning"
+        patterns = [
+            r'^([01])\s*,\s*(.+)$',  # "1, reasoning"
+            r'^([01])\s+(.+)$',      # "1 reasoning"
+            r'^([01])\s*(.+)$'       # "1reasoning"
+        ]
         
-        # Look for digits in the response
+        for pattern in patterns:
+            match = re.match(pattern, cleaned, re.DOTALL)
+            if match:
+                decision = match.group(1)
+                reasoning = match.group(2).strip()
+                return decision, reasoning
+        
+        # If structured format not found, try to find just the number
         for char in cleaned:
             if char in ["0", "1"]:
-                return char
+                # Extract reasoning as everything after the number
+                idx = cleaned.find(char)
+                reasoning = cleaned[idx+1:].strip().lstrip(',').strip()
+                return char, reasoning if reasoning else None
         
         # If no clear decision found
         logger.warning(f"Could not parse purchase decision from response: {response}")
-        return None
+        return None, None
     
-    async def simulate_all_personas(self, personas: List[Dict[str, Any]], market_context: str) -> List[Dict[str, Any]]:
+    async def simulate_all_personas(self, personas: List[Dict[str, Any]], market_context: Optional[str] = None) -> List[Dict[str, Any]]:
         """
         Simulate purchase decisions for all personas.
         
         Args:
             personas: List of persona dictionaries
-            market_context: Market information string
+            market_context: Optional market information string (defaults to product info)
             
         Returns:
             List of simulation results
@@ -282,6 +384,7 @@ class PersonaSimulator:
             "metadata": {
                 "simulation_time": datetime.now().isoformat(),
                 "model_used": self.config["llm"]["model_name"],
+                "product_name": self._get_product_name(),
                 "total_personas": len(results),
                 "statistics": self.simulation_stats
             },
@@ -302,13 +405,13 @@ class PersonaSimulator:
     
     def generate_summary_report(self, results: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
-        Generate a summary report of simulation results.
+        Generate a summary report of simulation results including demographic breakdowns.
         
         Args:
             results: List of simulation results
             
         Returns:
-            Summary report dictionary
+            Summary report dictionary with gender/age breakdowns
         """
         if not results:
             return {"error": "No results to summarize"}
@@ -316,14 +419,58 @@ class PersonaSimulator:
         successful_results = [r for r in results if r["success"]]
         purchase_counts = {"0": 0, "1": 0, "invalid": 0}
         
+        # Initialize demographic breakdowns
+        gender_breakdown = {
+            "남성": {"0": 0, "1": 0, "invalid": 0},
+            "여성": {"0": 0, "1": 0, "invalid": 0}
+        }
+        
+        age_breakdown = {
+            "20대": {"0": 0, "1": 0, "invalid": 0},
+            "30대": {"0": 0, "1": 0, "invalid": 0},
+            "40대": {"0": 0, "1": 0, "invalid": 0},
+            "50대": {"0": 0, "1": 0, "invalid": 0},
+            "60대": {"0": 0, "1": 0, "invalid": 0},
+            "70대 이상": {"0": 0, "1": 0, "invalid": 0}
+        }
+        
+        # Process results and count decisions by demographics
         for result in successful_results:
             decision = result["purchase_decision"]
+            persona = result["persona"]
+            
+            # Count overall decisions
             if decision in ["0", "1"]:
                 purchase_counts[decision] += 1
             else:
                 purchase_counts["invalid"] += 1
+                decision = "invalid"
+            
+            # Count by gender
+            gender = persona.get("gender", "Unknown")
+            if gender in gender_breakdown:
+                gender_breakdown[gender][decision] += 1
+            
+            # Count by age
+            age = persona.get("age", "Unknown")
+            if age in age_breakdown:
+                age_breakdown[age][decision] += 1
         
         total_valid = purchase_counts["0"] + purchase_counts["1"]
+        
+        # Calculate rates for demographic breakdowns
+        def calculate_rates(breakdown_dict):
+            rates = {}
+            for category, counts in breakdown_dict.items():
+                total_category = counts["0"] + counts["1"]
+                rates[category] = {
+                    "will_not_purchase": counts["0"],
+                    "will_purchase": counts["1"],
+                    "invalid_responses": counts["invalid"],
+                    "total_valid": total_category,
+                    "purchase_rate": counts["1"] / total_category if total_category > 0 else 0
+                }
+            return rates
         
         summary = {
             "total_personas": len(results),
@@ -335,6 +482,10 @@ class PersonaSimulator:
                 "invalid_responses": purchase_counts["invalid"]
             },
             "purchase_rate": purchase_counts["1"] / total_valid if total_valid > 0 else 0,
+            "demographic_breakdown": {
+                "by_gender": calculate_rates(gender_breakdown),
+                "by_age": calculate_rates(age_breakdown)
+            },
             "statistics": self.simulation_stats
         }
         
