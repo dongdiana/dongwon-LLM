@@ -5,8 +5,9 @@ Handles loading JSONL persona files and product JSON data.
 
 import json
 import os
+import random
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
 import logging
 import pandas as pd
 
@@ -15,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class PersonaLoader:
-    """Loads persona data from CSV file."""
+    """Loads persona data from CSV file or detailed JSON persona files."""
     
     def __init__(self, persona_data_dir: str, persona_filename: str = None):
         self.persona_data_dir = Path(persona_data_dir)
@@ -94,6 +95,66 @@ class PersonaLoader:
                 return False
                 
         return True
+    
+    def load_detailed_personas(self, product_name: str) -> List[Dict[str, Any]]:
+        """
+        Load detailed persona data from persona/{product_name}.json file.
+        
+        Args:
+            product_name: Name of the product to load personas for
+            
+        Returns:
+            List of detailed persona dictionaries
+        """
+        personas = []
+        
+        # Construct the JSON file path
+        persona_json_path = Path("persona") / f"{product_name}.json"
+        
+        if not persona_json_path.exists():
+            logger.warning(f"Detailed persona JSON file does not exist: {persona_json_path}")
+            return personas
+            
+        try:
+            # Load JSON file
+            with open(persona_json_path, 'r', encoding='utf-8') as f:
+                persona_data = json.load(f)
+                
+            logger.info(f"Loaded detailed persona JSON file with {len(persona_data)} personas from {persona_json_path}")
+            
+            # Process each persona
+            for persona in persona_data:
+                # Extract reasoning without "이 페르소나는 " prefix
+                reasoning = persona.get("reasoning", "")
+                if reasoning.startswith("이 페르소나는 "):
+                    reasoning = reasoning[7:]  # Remove "이 페르소나는 " (7 characters)
+                
+                # Create formatted persona info excluding uuid, segment_key_input, and reasoning
+                excluded_fields = {"uuid", "segment_key_input", "reasoning"}
+                persona_info_parts = []
+                
+                for key, value in persona.items():
+                    if key not in excluded_fields:
+                        persona_info_parts.append(f"{key}: {value}")
+                
+                persona_info = "\n".join(persona_info_parts)
+                
+                processed_persona = {
+                    "uuid": persona["uuid"],
+                    "segment_key_input": persona.get("segment_key_input", ""),
+                    "reasoning": reasoning,
+                    "persona_info": persona_info,
+                    "raw_data": persona  # Keep original data for reference
+                }
+                
+                personas.append(processed_persona)
+            
+            logger.info(f"Successfully processed {len(personas)} detailed personas")
+            return personas
+            
+        except Exception as e:
+            logger.error(f"Error loading detailed persona JSON file: {e}")
+            return []
 
 
 class ProductLoader:
@@ -245,3 +306,88 @@ class ProductLoader:
         except Exception as e:
             logger.warning(f"Error loading Naver trend data from {product_filename}: {e}")
             return {}
+    
+    def generate_product_options(self, product_data: Dict[str, Any]) -> Tuple[str, List[str]]:
+        """
+        Generate randomized product options from product data for Type B prompts.
+        
+        Args:
+            product_data: Raw product data dictionary
+            
+        Returns:
+            Tuple of (formatted_options_string, list_of_product_names_in_order)
+        """
+        if not product_data:
+            return "No product options available.", []
+        
+        options = []
+        product_names = []
+        
+        # Find target product (first key that's not "유사제품군" or "market_report")
+        target_product_name = None
+        for key in product_data.keys():
+            if key not in ["유사제품군", "market_report"]:
+                target_product_name = key
+                break
+        
+        # Add target product
+        if target_product_name and target_product_name in product_data:
+            target_product = product_data[target_product_name]
+            
+            # Extract content from product_info
+            product_info_content = []
+            if "product_info" in target_product and "content" in target_product["product_info"]:
+                content = target_product["product_info"]["content"]
+                if isinstance(content, list):
+                    product_info_content = content
+                else:
+                    product_info_content = [content]
+            
+            # Extract nutrition info
+            nutrition_info = target_product.get("nutrition_per100", {})
+            
+            # Format target product option
+            product_info_str = " ".join(product_info_content) if product_info_content else "No product info available"
+            nutrition_str = ", ".join([f"{k}: {v}" for k, v in nutrition_info.items()]) if nutrition_info else "No nutrition info available"
+            
+            options.append({
+                "name": target_product_name,
+                "info": f"product_info: {product_info_str}, nutrition_per100: {nutrition_str}"
+            })
+            product_names.append(target_product_name)
+        
+        # Add similar products
+        if "유사제품군" in product_data:
+            similar_products = product_data["유사제품군"]
+            
+            for similar_product_name, similar_product_data in similar_products.items():
+                # Extract product_info (list format for similar products)
+                product_info_content = similar_product_data.get("product_info", [])
+                if isinstance(product_info_content, list):
+                    product_info_str = " ".join(product_info_content)
+                else:
+                    product_info_str = str(product_info_content)
+                
+                # Extract nutrition info
+                nutrition_info = similar_product_data.get("nutrition_per100", {})
+                nutrition_str = ", ".join([f"{k}: {v}" for k, v in nutrition_info.items()]) if nutrition_info else "No nutrition info available"
+                
+                options.append({
+                    "name": similar_product_name,
+                    "info": f"product_info: {product_info_str}, nutrition_per100: {nutrition_str}"
+                })
+                product_names.append(similar_product_name)
+        
+        # Randomize the order
+        combined = list(zip(options, product_names))
+        random.shuffle(combined)
+        options, product_names = zip(*combined) if combined else ([], [])
+        
+        # Format options string
+        formatted_options = []
+        for i, option in enumerate(options, 1):
+            formatted_options.append(f"{i}. ({option['name']}) {option['info']}")
+        
+        options_string = "\n".join(formatted_options)
+        
+        return options_string, list(product_names)

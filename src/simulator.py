@@ -15,7 +15,7 @@ from typing import Dict, List, Any, Optional, Tuple
 
 import yaml
 from langchain_openai import ChatOpenAI
-from langchain.schema import HumanMessage, SystemMessage
+from langchain.schema import HumanMessage, SystemMessage, AIMessage
 from dotenv import load_dotenv
 from tqdm import asyncio as tqdm_asyncio
 
@@ -116,22 +116,30 @@ class PersonaSimulator:
             raise
     
     def _validate_prompt_config(self) -> None:
-        """Validate that the configured prompts exist in the prompt file."""
-        system_prompt_key = self.config["prompts"]["system_prompt"]
-        user_prompt_key = self.config["prompts"]["user_prompt"]
+        """Validate that the configured prompt type exists in the prompt file."""
+        prompt_type = self.config["prompts"]["type"]
         
-        # Check if system prompt exists
-        if system_prompt_key not in self.prompts:
-            raise ValueError(f"System prompt '{system_prompt_key}' not found in prompt.yaml. "
-                           f"Available prompts: {list(self.prompts.keys())}")
+        if prompt_type not in ["A", "B"]:
+            raise ValueError(f"Prompt type must be 'A' or 'B', got: {prompt_type}")
         
-        # Check if user prompt exists
-        if user_prompt_key not in self.prompts:
-            raise ValueError(f"User prompt '{user_prompt_key}' not found in prompt.yaml. "
-                           f"Available prompts: {list(self.prompts.keys())}")
+        # Check if required prompts exist based on type
+        if prompt_type == "A":
+            required_prompts = ["system_prompt_A", "user_prompt_A"]
+        else:  # type B
+            required_prompts = ["system_prompt_B"]
+            # Find all user_prompt_B* prompts
+            b_user_prompts = [key for key in self.prompts.keys() if key.startswith("user_prompt_B")]
+            required_prompts.extend(b_user_prompts)
         
-        logger.info(f"Using system prompt: {system_prompt_key}")
-        logger.info(f"Using user prompt: {user_prompt_key}")
+        for prompt_key in required_prompts:
+            if prompt_key not in self.prompts:
+                raise ValueError(f"Required prompt '{prompt_key}' not found in prompt.yaml for type {prompt_type}. "
+                               f"Available prompts: {list(self.prompts.keys())}")
+        
+        logger.info(f"Using prompt type: {prompt_type}")
+        if prompt_type == "B":
+            b_prompts = [key for key in required_prompts if key.startswith("user_prompt_B")]
+            logger.info(f"Found {len(b_prompts)} user prompts for type B: {b_prompts}")
     
 
     
@@ -155,9 +163,9 @@ class PersonaSimulator:
         logger.info(f"Initialized LLM: {llm_config['model_name']}")
         return llm
     
-    def _format_persona_prompt(self, persona: Dict[str, Any], market_context: str, search_summary: str) -> Tuple[str, str]:
+    def _format_persona_prompt_type_a(self, persona: Dict[str, Any], market_context: str, search_summary: str) -> Tuple[str, str]:
         """
-        Format the prompts with persona information, market context, and search summary.
+        Format the prompts for Type A (single question) with persona information.
         
         Args:
             persona: Persona dictionary with demographic info
@@ -170,12 +178,8 @@ class PersonaSimulator:
         # Extract product name from product info
         product_name = self.get_product_name()
         
-        # Get prompt keys from config
-        system_prompt_key = self.config["prompts"]["system_prompt"]
-        user_prompt_key = self.config["prompts"]["user_prompt"]
-        
         # Format system prompt with all required variables
-        system_prompt = self.prompts[system_prompt_key].format(
+        system_prompt = self.prompts["system_prompt_A"].format(
             age=persona["age"],
             gender=persona["gender"],
             income=persona["income"],
@@ -186,9 +190,42 @@ class PersonaSimulator:
         )
         
         # Format user prompt with product name
-        user_prompt = self.prompts[user_prompt_key].format(
+        user_prompt = self.prompts["user_prompt_A"].format(
             product_name=product_name
         )
+        
+        return system_prompt, user_prompt
+    
+    def _format_persona_prompt_type_b(self, persona: Dict[str, Any], user_prompt_key: str, product_options: str = "", quantity_context: str = "") -> Tuple[str, str]:
+        """
+        Format the prompts for Type B (multi-question) with detailed persona information.
+        
+        Args:
+            persona: Detailed persona dictionary with reasoning and persona_info
+            user_prompt_key: Key for the specific user prompt (e.g., "user_prompt_B1")
+            product_options: Formatted product options string (for B1)
+            quantity_context: Context from previous question (for B2)
+            
+        Returns:
+            Tuple of (system_prompt, user_prompt)
+        """
+        # Format system prompt with detailed persona data
+        system_prompt = self.prompts["system_prompt_B"].format(
+            reasoning=persona["reasoning"],
+            persona_info=persona["persona_info"]
+        )
+        
+        # Format user prompt based on which question this is
+        if user_prompt_key == "user_prompt_B1":
+            user_prompt = self.prompts[user_prompt_key].format(
+                product_options=product_options
+            )
+        elif user_prompt_key == "user_prompt_B2":
+            # Use the context from the previous question if needed
+            user_prompt = self.prompts[user_prompt_key]
+        else:
+            # Generic formatting for any additional B prompts
+            user_prompt = self.prompts[user_prompt_key]
         
         return system_prompt, user_prompt
     
@@ -222,9 +259,28 @@ class PersonaSimulator:
     async def _simulate_single_persona(self, persona: Dict[str, Any], market_context: Optional[str] = None) -> Dict[str, Any]:
         """
         Simulate purchase decision for a single persona.
+        Handles both Type A (single question) and Type B (multi-question) simulations.
         
         Args:
             persona: Persona dictionary
+            market_context: Market information string (only used for Type A)
+            
+        Returns:
+            Dictionary with simulation results
+        """
+        prompt_type = self.config["prompts"]["type"]
+        
+        if prompt_type == "A":
+            return await self._simulate_single_persona_type_a(persona, market_context)
+        else:  # Type B
+            return await self._simulate_single_persona_type_b(persona)
+    
+    async def _simulate_single_persona_type_a(self, persona: Dict[str, Any], market_context: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Simulate Type A (single question) for a single persona.
+        
+        Args:
+            persona: Persona dictionary with demographic info
             market_context: Market information string
             
         Returns:
@@ -241,7 +297,7 @@ class PersonaSimulator:
             search_summary = self._get_search_summary()
             
             # Format prompts with all required data
-            system_prompt, user_prompt = self._format_persona_prompt(persona, market_context, search_summary)
+            system_prompt, user_prompt = self._format_persona_prompt_type_a(persona, market_context, search_summary)
             
             # Create messages
             messages = [
@@ -300,9 +356,135 @@ class PersonaSimulator:
                 "timestamp": datetime.now().isoformat()
             }
     
+    async def _simulate_single_persona_type_b(self, persona: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Simulate Type B (multi-question) for a single persona.
+        
+        Args:
+            persona: Detailed persona dictionary
+            
+        Returns:
+            Dictionary with simulation results
+        """
+        persona_id = persona.get("uuid", "unknown")
+        
+        try:
+            # Generate randomized product options
+            product_options, product_names = self.product_loader.generate_product_options(self.product_info)
+            
+            # Get available user prompts for Type B
+            b_user_prompts = sorted([key for key in self.prompts.keys() if key.startswith("user_prompt_B")])
+            
+            all_responses = []
+            total_response_time = 0
+            selected_product = None
+            selected_quantity = None
+            
+            # Initialize conversation history with system prompt
+            system_prompt, _ = self._format_persona_prompt_type_b(persona, "user_prompt_B1")
+            conversation_history = [SystemMessage(content=system_prompt)]
+            
+            # Question 1: Product selection
+            if "user_prompt_B1" in b_user_prompts:
+                _, user_prompt = self._format_persona_prompt_type_b(
+                    persona, "user_prompt_B1", product_options=product_options
+                )
+                
+                # Add the user question to conversation history
+                conversation_history.append(HumanMessage(content=user_prompt))
+                
+                start_time = time.time()
+                response = await self.llm.ainvoke(conversation_history)
+                end_time = time.time()
+                total_response_time += (end_time - start_time)
+                
+                self._apply_rate_limiting()
+                
+                response_text = response.content.strip()
+                selected_number, selected_product, reasoning1 = self._parse_product_selection(response_text, product_names)
+                
+                # Add the assistant response to conversation history
+                conversation_history.append(AIMessage(content=response_text))
+                
+                all_responses.append({
+                    "question": "user_prompt_B1",
+                    "response": response_text,
+                    "selected_number": selected_number,
+                    "selected_product": selected_product,
+                    "reasoning": reasoning1
+                })
+            
+            # Question 2: Quantity selection (if product was selected)
+            if "user_prompt_B2" in b_user_prompts and selected_product:
+                _, user_prompt = self._format_persona_prompt_type_b(
+                    persona, "user_prompt_B2"
+                )
+                
+                # Add the user question to conversation history (maintains previous context)
+                conversation_history.append(HumanMessage(content=user_prompt))
+                
+                start_time = time.time()
+                response = await self.llm.ainvoke(conversation_history)
+                end_time = time.time()
+                total_response_time += (end_time - start_time)
+                
+                self._apply_rate_limiting()
+                
+                response_text = response.content.strip()
+                selected_quantity, reasoning2 = self._parse_quantity_selection(response_text)
+                
+                # Add the assistant response to conversation history
+                conversation_history.append(AIMessage(content=response_text))
+                
+                all_responses.append({
+                    "question": "user_prompt_B2",
+                    "response": response_text,
+                    "selected_quantity": selected_quantity,
+                    "reasoning": reasoning2
+                })
+            
+            result = {
+                "persona_id": persona_id,
+                "persona": persona,
+                "product_options_order": product_names,
+                "selected_product": selected_product,
+                "selected_quantity": selected_quantity,
+                "all_responses": all_responses,
+                "response_time": total_response_time,
+                "success": True,
+                "error": None,
+                "timestamp": datetime.now().isoformat()
+            }
+            
+            # Update statistics
+            self.simulation_stats["successful_simulations"] += 1
+            
+            logger.debug(f"Persona {persona_id}: Selected product = {selected_product}, Quantity = {selected_quantity}")
+            return result
+            
+        except Exception as e:
+            logger.error(f"Error simulating persona {persona_id}: {e}")
+            self.simulation_stats["failed_simulations"] += 1
+
+            # Apply rate limiting even on failed requests to maintain consistent pacing
+            self._apply_rate_limiting()
+
+            return {
+                "persona_id": persona_id,
+                "persona": persona,
+                "product_options_order": [],
+                "selected_product": None,
+                "selected_quantity": None,
+                "all_responses": [],
+                "response_time": None,
+                "success": False,
+                "error": str(e),
+                "timestamp": datetime.now().isoformat()
+            }
+    
     def _parse_purchase_decision(self, response: str) -> Tuple[Optional[str], Optional[str]]:
         """
-        Parse the LLM response to extract purchase decision and reasoning.
+        Parse the LLM response to extract purchase decision and reasoning (Type A).
         
         Args:
             response: Raw LLM response text
@@ -337,6 +519,107 @@ class PersonaSimulator:
         
         # If no clear decision found
         logger.warning(f"Could not parse purchase decision from response: {response}")
+        return None, None
+    
+    def _parse_product_selection(self, response: str, product_names: List[str]) -> Tuple[Optional[str], Optional[str], Optional[str]]:
+        """
+        Parse the LLM response to extract product selection and reasoning (Type B1).
+        
+        Args:
+            response: Raw LLM response text
+            product_names: List of product names in order of options
+            
+        Returns:
+            Tuple of (selected_number, selected_product_name, reasoning)
+        """
+        # Clean the response
+        cleaned = response.strip()
+        
+        # Try to match pattern: "number, reasoning" or "number reasoning"
+        patterns = [
+            r'^(\d+)\s*,\s*(.+)$',  # "1, reasoning"
+            r'^(\d+)\s+(.+)$',      # "1 reasoning"
+            r'^(\d+)\s*(.+)$'       # "1reasoning"
+        ]
+        
+        for pattern in patterns:
+            match = re.match(pattern, cleaned, re.DOTALL)
+            if match:
+                number_str = match.group(1)
+                reasoning = match.group(2).strip()
+                
+                try:
+                    number = int(number_str)
+                    if 1 <= number <= len(product_names):
+                        product_name = product_names[number - 1]  # Convert to 0-based index
+                        return number_str, product_name, reasoning
+                    else:
+                        logger.warning(f"Selected number {number} is out of range (1-{len(product_names)})")
+                        return number_str, None, reasoning
+                except ValueError:
+                    logger.warning(f"Could not convert '{number_str}' to integer")
+                    return number_str, None, reasoning
+        
+        # If structured format not found, try to find just the number
+        for char in cleaned:
+            if char.isdigit():
+                try:
+                    number = int(char)
+                    if 1 <= number <= len(product_names):
+                        product_name = product_names[number - 1]
+                        # Extract reasoning as everything after the number
+                        idx = cleaned.find(char)
+                        reasoning = cleaned[idx+1:].strip().lstrip(',').strip()
+                        return char, product_name, reasoning if reasoning else None
+                except ValueError:
+                    continue
+        
+        # If no clear selection found
+        logger.warning(f"Could not parse product selection from response: {response}")
+        return None, None, None
+    
+    def _parse_quantity_selection(self, response: str) -> Tuple[Optional[str], Optional[str]]:
+        """
+        Parse the LLM response to extract quantity selection and reasoning (Type B2).
+        
+        Args:
+            response: Raw LLM response text
+            
+        Returns:
+            Tuple of (quantity, reasoning)
+        """
+        # Clean the response
+        cleaned = response.strip()
+        
+        # Try to match pattern: "number, reasoning" or "number reasoning"
+        patterns = [
+            r'^(\d+)\s*,\s*(.+)$',  # "2, reasoning"
+            r'^(\d+)\s+(.+)$',      # "2 reasoning"
+            r'^(\d+)\s*(.+)$'       # "2reasoning"
+        ]
+        
+        for pattern in patterns:
+            match = re.match(pattern, cleaned, re.DOTALL)
+            if match:
+                quantity = match.group(1)
+                reasoning = match.group(2).strip()
+                return quantity, reasoning
+        
+        # If structured format not found, try to find just the number
+        for i, char in enumerate(cleaned):
+            if char.isdigit():
+                # Try to get the full number (could be multi-digit)
+                num_start = i
+                num_end = i + 1
+                while num_end < len(cleaned) and cleaned[num_end].isdigit():
+                    num_end += 1
+                
+                quantity = cleaned[num_start:num_end]
+                reasoning = cleaned[num_end:].strip().lstrip(',').strip()
+                return quantity, reasoning if reasoning else None
+        
+        # If no clear quantity found
+        logger.warning(f"Could not parse quantity selection from response: {response}")
         return None, None
     
     async def simulate_all_personas(self, personas: List[Dict[str, Any]], market_context: Optional[str] = None) -> List[Dict[str, Any]]:

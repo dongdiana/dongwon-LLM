@@ -101,20 +101,30 @@ class SimulationReporter:
             raise
     
     def generate_summary_report(self, results: List[Dict[str, Any]], 
-                               simulation_stats: Dict[str, Any]) -> Dict[str, Any]:
+                               simulation_stats: Dict[str, Any], 
+                               prompt_type: str = "A") -> Dict[str, Any]:
         """
         Generate a summary report of simulation results including demographic breakdowns.
         
         Args:
             results: List of simulation results
             simulation_stats: Statistics from the simulation
+            prompt_type: Type of simulation ("A" or "B")
             
         Returns:
-            Summary report dictionary with gender/age breakdowns
+            Summary report dictionary with appropriate analysis for the simulation type
         """
         if not results:
             return {"error": "No results to summarize"}
         
+        if prompt_type == "B":
+            return self._generate_type_b_report(results, simulation_stats)
+        else:
+            return self._generate_type_a_report(results, simulation_stats)
+    
+    def _generate_type_a_report(self, results: List[Dict[str, Any]], 
+                               simulation_stats: Dict[str, Any]) -> Dict[str, Any]:
+        """Generate Type A specific report with traditional purchase decision analysis."""
         successful_results = [r for r in results if r["success"]]
         purchase_counts = {"0": 0, "1": 0, "invalid": 0}
         
@@ -133,25 +143,26 @@ class SimulationReporter:
             "70대 이상": {"0": 0, "1": 0, "invalid": 0}
         }
         
-        # Process results and count decisions by demographics
+        # Process Type A results
         for result in successful_results:
-            decision = result["purchase_decision"]
             persona = result["persona"]
+            decision = result["purchase_decision"]
             
-            # Count overall decisions
             if decision in ["0", "1"]:
                 purchase_counts[decision] += 1
             else:
                 purchase_counts["invalid"] += 1
                 decision = "invalid"
             
-            # Count by gender
+            # Extract demographics for Type A
             gender = persona.get("gender", "Unknown")
+            age = persona.get("age", "Unknown")
+            
+            # Count by gender
             if gender in gender_breakdown:
                 gender_breakdown[gender][decision] += 1
             
             # Count by age
-            age = persona.get("age", "Unknown")
             if age in age_breakdown:
                 age_breakdown[age][decision] += 1
         
@@ -172,6 +183,7 @@ class SimulationReporter:
             return rates
         
         summary = {
+            "simulation_type": "A",
             "total_personas": len(results),
             "successful_simulations": len(successful_results),
             "failed_simulations": len(results) - len(successful_results),
@@ -190,6 +202,150 @@ class SimulationReporter:
         
         return summary
     
+    def _generate_type_b_report(self, results: List[Dict[str, Any]], 
+                               simulation_stats: Dict[str, Any]) -> Dict[str, Any]:
+        """Generate Type B specific report with product selection analysis."""
+        successful_results = [r for r in results if r["success"]]
+        
+        # Collect all unique products from all results
+        all_products = set()
+        for result in successful_results:
+            if result.get("product_options_order"):
+                all_products.update(result["product_options_order"])
+        
+        all_products = sorted(list(all_products))
+        
+        # Initialize product selection counts
+        product_counts = {product: 0 for product in all_products}
+        product_counts["no_selection"] = 0
+        
+        # Initialize quantity analysis
+        quantity_stats = {}
+        
+        # Initialize demographic breakdowns by product
+        gender_breakdown = {
+            "남성": {product: 0 for product in all_products},
+            "여성": {product: 0 for product in all_products}
+        }
+        gender_breakdown["남성"]["no_selection"] = 0
+        gender_breakdown["여성"]["no_selection"] = 0
+        
+        age_breakdown = {
+            "20대": {product: 0 for product in all_products},
+            "30대": {product: 0 for product in all_products},
+            "40대": {product: 0 for product in all_products},
+            "50대": {product: 0 for product in all_products},
+            "60대": {product: 0 for product in all_products},
+            "70대 이상": {product: 0 for product in all_products}
+        }
+        for age_group in age_breakdown:
+            age_breakdown[age_group]["no_selection"] = 0
+        
+        # Process Type B results
+        for result in successful_results:
+            persona = result["persona"]
+            selected_product = result.get("selected_product")
+            selected_quantity = result.get("selected_quantity")
+            
+            # Count product selections
+            if selected_product and selected_product in all_products:
+                product_counts[selected_product] += 1
+                
+                # Analyze quantities
+                if selected_quantity:
+                    try:
+                        qty = int(selected_quantity)
+                        if selected_product not in quantity_stats:
+                            quantity_stats[selected_product] = []
+                        quantity_stats[selected_product].append(qty)
+                    except ValueError:
+                        pass
+            else:
+                product_counts["no_selection"] += 1
+                selected_product = "no_selection"
+            
+            # Extract demographics for Type B
+            raw_data = persona.get("raw_data", {})
+            gender = raw_data.get("성별", "Unknown")
+            age = raw_data.get("연령대", "Unknown")
+            
+            # Map age format for Type B
+            age_mapping = {
+                "만 19~29세": "20대",
+                "만 30~39세": "30대", 
+                "만 40~49세": "40대",
+                "만 50~59세": "50대",
+                "만 60~69세": "60대",
+                "만 70세 이상": "70대 이상"
+            }
+            age = age_mapping.get(age, age)
+            
+            # Count by demographics
+            if gender in gender_breakdown and selected_product in gender_breakdown[gender]:
+                gender_breakdown[gender][selected_product] += 1
+            
+            if age in age_breakdown and selected_product in age_breakdown[age]:
+                age_breakdown[age][selected_product] += 1
+        
+        total_selections = len(successful_results)
+        
+        # Calculate product selection rates and percentages
+        product_analysis = {}
+        for product in all_products + ["no_selection"]:
+            count = product_counts[product]
+            percentage = (count / total_selections * 100) if total_selections > 0 else 0
+            
+            analysis = {
+                "count": count,
+                "percentage": round(percentage, 2),
+                "selection_rate": round(count / total_selections, 4) if total_selections > 0 else 0
+            }
+            
+            # Add quantity statistics if available
+            if product in quantity_stats and quantity_stats[product]:
+                quantities = quantity_stats[product]
+                analysis["quantity_stats"] = {
+                    "average": round(sum(quantities) / len(quantities), 2),
+                    "min": min(quantities),
+                    "max": max(quantities),
+                    "total_quantity": sum(quantities)
+                }
+            
+            product_analysis[product] = analysis
+        
+        # Calculate demographic breakdown rates
+        def calculate_demographic_rates(breakdown_dict):
+            rates = {}
+            for category, products in breakdown_dict.items():
+                total_category = sum(products.values())
+                rates[category] = {
+                    "total_selections": total_category,
+                    "products": {}
+                }
+                
+                for product, count in products.items():
+                    rates[category]["products"][product] = {
+                        "count": count,
+                        "percentage": round((count / total_category * 100) if total_category > 0 else 0, 2),
+                        "selection_rate": round(count / total_category, 4) if total_category > 0 else 0
+                    }
+            return rates
+        
+        summary = {
+            "simulation_type": "B",
+            "total_personas": len(results),
+            "successful_simulations": len(successful_results),
+            "failed_simulations": len(results) - len(successful_results),
+            "product_analysis": product_analysis,
+            "demographic_breakdown": {
+                "by_gender": calculate_demographic_rates(gender_breakdown),
+                "by_age": calculate_demographic_rates(age_breakdown)
+            },
+            "statistics": simulation_stats
+        }
+        
+        return summary
+    
     def print_summary_log(self, summary: Dict[str, Any]) -> None:
         """
         Print summary report to logger for console output.
@@ -197,10 +353,21 @@ class SimulationReporter:
         Args:
             summary: Summary report dictionary
         """
+        simulation_type = summary.get("simulation_type", "A")
+        
         logger.info("=== SIMULATION SUMMARY ===")
+        logger.info(f"Simulation Type: {simulation_type}")
         logger.info(f"Total Personas: {summary['total_personas']}")
         logger.info(f"Successful Simulations: {summary['successful_simulations']}")
         logger.info(f"Failed Simulations: {summary['failed_simulations']}")
+        
+        if simulation_type == "A":
+            self._print_type_a_summary(summary)
+        else:
+            self._print_type_b_summary(summary)
+    
+    def _print_type_a_summary(self, summary: Dict[str, Any]) -> None:
+        """Print Type A specific summary."""
         logger.info(f"Will Purchase: {summary['purchase_decisions']['will_purchase']}")
         logger.info(f"Will Not Purchase: {summary['purchase_decisions']['will_not_purchase']}")
         logger.info(f"Invalid Responses: {summary['purchase_decisions']['invalid_responses']}")
@@ -220,3 +387,34 @@ class SimulationReporter:
         for age, data in summary['demographic_breakdown']['by_age'].items():
             logger.info(f"  {age}: Purchase={data['will_purchase']}, No Purchase={data['will_not_purchase']}, "
                        f"Rate={data['purchase_rate']:.2%}")
+    
+    def _print_type_b_summary(self, summary: Dict[str, Any]) -> None:
+        """Print Type B specific summary with product analysis."""
+        # Product selection overview
+        logger.info("\n=== PRODUCT SELECTION ANALYSIS ===")
+        product_analysis = summary['product_analysis']
+        
+        for product, data in product_analysis.items():
+            logger.info(f"{product}: {data['count']} selections ({data['percentage']:.1f}%)")
+            if 'quantity_stats' in data:
+                qty_stats = data['quantity_stats']
+                logger.info(f"  Quantity - Avg: {qty_stats['average']}, "
+                           f"Range: {qty_stats['min']}-{qty_stats['max']}, "
+                           f"Total: {qty_stats['total_quantity']}")
+        
+        # Gender demographic analysis
+        logger.info("\n=== DEMOGRAPHIC BREAKDOWN ===")
+        logger.info("Gender Analysis:")
+        for gender, data in summary['demographic_breakdown']['by_gender'].items():
+            logger.info(f"  {gender} (Total: {data['total_selections']}):")
+            for product, product_data in data['products'].items():
+                if product_data['count'] > 0:
+                    logger.info(f"    {product}: {product_data['count']} ({product_data['percentage']:.1f}%)")
+        
+        # Age demographic analysis
+        logger.info("Age Analysis:")
+        for age, data in summary['demographic_breakdown']['by_age'].items():
+            logger.info(f"  {age} (Total: {data['total_selections']}):")
+            for product, product_data in data['products'].items():
+                if product_data['count'] > 0:
+                    logger.info(f"    {product}: {product_data['count']} ({product_data['percentage']:.1f}%)")

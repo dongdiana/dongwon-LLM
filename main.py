@@ -61,15 +61,23 @@ async def main():
         persona_filename = config["persona"]["filename"]
         persona_loader = PersonaLoader(persona_data_dir, persona_filename)
         
-        # Load personas
+        # Load personas based on prompt type
         logger.info("Loading persona data...")
-        personas = persona_loader.load_all_personas()
+        prompt_type = config["prompts"]["type"]
+        
+        if prompt_type == "A":
+            # Use CSV personas for Type A
+            personas = persona_loader.load_all_personas()
+        else:  # Type B
+            # Use detailed JSON personas for Type B
+            product_name = config["product"]["filename"]
+            personas = persona_loader.load_detailed_personas(product_name)
         
         if not personas:
             logger.error("No valid persona data found. Cannot proceed with simulation.")
             return
         
-        logger.info(f"Loaded {len(personas)} personas")
+        logger.info(f"Loaded {len(personas)} personas for prompt type {prompt_type}")
         
         # Initialize simulator and reporter
         logger.info("Initializing LLM simulator...")
@@ -90,7 +98,7 @@ async def main():
         )
         
         # Generate and display summary
-        summary = reporter.generate_summary_report(results, simulator.simulation_stats)
+        summary = reporter.generate_summary_report(results, simulator.simulation_stats, prompt_type)
         
         # Print summary to log
         reporter.print_summary_log(summary)
