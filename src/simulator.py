@@ -43,6 +43,7 @@ class PersonaSimulator:
         """
         self.config = self._load_config(config_path)
         self.prompts = self._load_prompts(prompt_path)
+        self._validate_prompt_config()
         
         # Initialize product loader
         self.product_loader = ProductLoader(self.config["paths"]["product_data_dir"])
@@ -56,9 +57,7 @@ class PersonaSimulator:
         
         self.llm = self._initialize_llm()
         
-        # Ensure results directory exists
-        results_dir = Path(self.config["paths"]["results_dir"])
-        results_dir.mkdir(exist_ok=True)
+
         
         # Statistics tracking
         self.simulation_stats = {
@@ -116,6 +115,24 @@ class PersonaSimulator:
             logger.error(f"Error loading prompts: {e}")
             raise
     
+    def _validate_prompt_config(self) -> None:
+        """Validate that the configured prompts exist in the prompt file."""
+        system_prompt_key = self.config["prompts"]["system_prompt"]
+        user_prompt_key = self.config["prompts"]["user_prompt"]
+        
+        # Check if system prompt exists
+        if system_prompt_key not in self.prompts:
+            raise ValueError(f"System prompt '{system_prompt_key}' not found in prompt.yaml. "
+                           f"Available prompts: {list(self.prompts.keys())}")
+        
+        # Check if user prompt exists
+        if user_prompt_key not in self.prompts:
+            raise ValueError(f"User prompt '{user_prompt_key}' not found in prompt.yaml. "
+                           f"Available prompts: {list(self.prompts.keys())}")
+        
+        logger.info(f"Using system prompt: {system_prompt_key}")
+        logger.info(f"Using user prompt: {user_prompt_key}")
+    
 
     
     def _initialize_llm(self) -> ChatOpenAI:
@@ -151,10 +168,14 @@ class PersonaSimulator:
             Tuple of (system_prompt, user_prompt)
         """
         # Extract product name from product info
-        product_name = self._get_product_name()
+        product_name = self.get_product_name()
+        
+        # Get prompt keys from config
+        system_prompt_key = self.config["prompts"]["system_prompt"]
+        user_prompt_key = self.config["prompts"]["user_prompt"]
         
         # Format system prompt with all required variables
-        system_prompt = self.prompts["system_prompt"].format(
+        system_prompt = self.prompts[system_prompt_key].format(
             age=persona["age"],
             gender=persona["gender"],
             income=persona["income"],
@@ -165,13 +186,13 @@ class PersonaSimulator:
         )
         
         # Format user prompt with product name
-        user_prompt = self.prompts["user_prompt"].format(
+        user_prompt = self.prompts[user_prompt_key].format(
             product_name=product_name
         )
         
         return system_prompt, user_prompt
     
-    def _get_product_name(self) -> str:
+    def get_product_name(self) -> str:
         """Get the product name from config filename."""
         # Use filename from config directly as the product name
         filename = self.config["product"]["filename"]
@@ -193,7 +214,7 @@ class PersonaSimulator:
             Formatted string with search trend analysis
         """
         # Get product name for formatting
-        product_name = self._get_product_name()
+        product_name = self.get_product_name()
         
         # Format the cached data using the loader
         return self.product_loader.format_search_summary(self.naver_trend_data, product_name)
@@ -361,132 +382,4 @@ class PersonaSimulator:
         
         return results
     
-    def save_results(self, results: List[Dict[str, Any]], filename: Optional[str] = None) -> str:
-        """
-        Save simulation results to JSON file.
-        
-        Args:
-            results: List of simulation results
-            filename: Optional custom filename
-            
-        Returns:
-            Path to saved file
-        """
-        if not filename:
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            filename = f"simulation_results_{timestamp}.json"
-        
-        results_dir = Path(self.config["paths"]["results_dir"])
-        file_path = results_dir / filename
-        
-        # Prepare output data
-        output_data = {
-            "metadata": {
-                "simulation_time": datetime.now().isoformat(),
-                "model_used": self.config["llm"]["model_name"],
-                "product_name": self._get_product_name(),
-                "total_personas": len(results),
-                "statistics": self.simulation_stats
-            },
-            "results": results
-        }
-        
-        # Save to file
-        try:
-            with open(file_path, 'w', encoding='utf-8') as f:
-                json.dump(output_data, f, indent=2, ensure_ascii=False)
-            
-            logger.info(f"Results saved to {file_path}")
-            return str(file_path)
-            
-        except Exception as e:
-            logger.error(f"Error saving results: {e}")
-            raise
-    
-    def generate_summary_report(self, results: List[Dict[str, Any]]) -> Dict[str, Any]:
-        """
-        Generate a summary report of simulation results including demographic breakdowns.
-        
-        Args:
-            results: List of simulation results
-            
-        Returns:
-            Summary report dictionary with gender/age breakdowns
-        """
-        if not results:
-            return {"error": "No results to summarize"}
-        
-        successful_results = [r for r in results if r["success"]]
-        purchase_counts = {"0": 0, "1": 0, "invalid": 0}
-        
-        # Initialize demographic breakdowns
-        gender_breakdown = {
-            "남성": {"0": 0, "1": 0, "invalid": 0},
-            "여성": {"0": 0, "1": 0, "invalid": 0}
-        }
-        
-        age_breakdown = {
-            "20대": {"0": 0, "1": 0, "invalid": 0},
-            "30대": {"0": 0, "1": 0, "invalid": 0},
-            "40대": {"0": 0, "1": 0, "invalid": 0},
-            "50대": {"0": 0, "1": 0, "invalid": 0},
-            "60대": {"0": 0, "1": 0, "invalid": 0},
-            "70대 이상": {"0": 0, "1": 0, "invalid": 0}
-        }
-        
-        # Process results and count decisions by demographics
-        for result in successful_results:
-            decision = result["purchase_decision"]
-            persona = result["persona"]
-            
-            # Count overall decisions
-            if decision in ["0", "1"]:
-                purchase_counts[decision] += 1
-            else:
-                purchase_counts["invalid"] += 1
-                decision = "invalid"
-            
-            # Count by gender
-            gender = persona.get("gender", "Unknown")
-            if gender in gender_breakdown:
-                gender_breakdown[gender][decision] += 1
-            
-            # Count by age
-            age = persona.get("age", "Unknown")
-            if age in age_breakdown:
-                age_breakdown[age][decision] += 1
-        
-        total_valid = purchase_counts["0"] + purchase_counts["1"]
-        
-        # Calculate rates for demographic breakdowns
-        def calculate_rates(breakdown_dict):
-            rates = {}
-            for category, counts in breakdown_dict.items():
-                total_category = counts["0"] + counts["1"]
-                rates[category] = {
-                    "will_not_purchase": counts["0"],
-                    "will_purchase": counts["1"],
-                    "invalid_responses": counts["invalid"],
-                    "total_valid": total_category,
-                    "purchase_rate": counts["1"] / total_category if total_category > 0 else 0
-                }
-            return rates
-        
-        summary = {
-            "total_personas": len(results),
-            "successful_simulations": len(successful_results),
-            "failed_simulations": len(results) - len(successful_results),
-            "purchase_decisions": {
-                "will_not_purchase": purchase_counts["0"],
-                "will_purchase": purchase_counts["1"],
-                "invalid_responses": purchase_counts["invalid"]
-            },
-            "purchase_rate": purchase_counts["1"] / total_valid if total_valid > 0 else 0,
-            "demographic_breakdown": {
-                "by_gender": calculate_rates(gender_breakdown),
-                "by_age": calculate_rates(age_breakdown)
-            },
-            "statistics": self.simulation_stats
-        }
-        
-        return summary
+

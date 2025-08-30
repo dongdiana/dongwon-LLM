@@ -153,9 +153,7 @@ class ProductLoader:
             
             # Add content sections
             for section_name in ["content"]:
-                if section_name in market_report and market_report[section_name]:
-                    context_parts.append(f"\n=== Market Report Section {section_name.upper()} ===")
-                    
+                if section_name in market_report and market_report[section_name]:                    
                     if isinstance(market_report[section_name], list):
                         for item in market_report[section_name]:
                             context_parts.append(f"- {item}")

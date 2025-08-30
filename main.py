@@ -12,6 +12,7 @@ from pathlib import Path
 
 from src.loader import PersonaLoader
 from src.simulator import PersonaSimulator
+from src.report import SimulationReporter
 
 # Configure logging
 logging.basicConfig(
@@ -70,9 +71,10 @@ async def main():
         
         logger.info(f"Loaded {len(personas)} personas")
         
-        # Initialize simulator
+        # Initialize simulator and reporter
         logger.info("Initializing LLM simulator...")
         simulator = PersonaSimulator(config_path, prompt_path)
+        reporter = SimulationReporter(config["paths"]["results_dir"])
         
         # Run simulation
         logger.info("Starting persona simulations...")
@@ -80,42 +82,24 @@ async def main():
         
         # Save results
         logger.info("Saving simulation results...")
-        results_file = simulator.save_results(results)
+        results_file = reporter.save_results(
+            results, 
+            simulator.simulation_stats, 
+            simulator.config["llm"]["model_name"], 
+            simulator.get_product_name()
+        )
         
         # Generate and display summary
-        summary = simulator.generate_summary_report(results)
+        summary = reporter.generate_summary_report(results, simulator.simulation_stats)
         
-        logger.info("=== SIMULATION SUMMARY ===")
-        logger.info(f"Total Personas: {summary['total_personas']}")
-        logger.info(f"Successful Simulations: {summary['successful_simulations']}")
-        logger.info(f"Failed Simulations: {summary['failed_simulations']}")
-        logger.info(f"Will Purchase: {summary['purchase_decisions']['will_purchase']}")
-        logger.info(f"Will Not Purchase: {summary['purchase_decisions']['will_not_purchase']}")
-        logger.info(f"Invalid Responses: {summary['purchase_decisions']['invalid_responses']}")
-        logger.info(f"Purchase Rate: {summary['purchase_rate']:.2%}")
-        
-        # Display demographic breakdowns
-        logger.info("\n=== DEMOGRAPHIC BREAKDOWN ===")
-        
-        # Gender breakdown
-        logger.info("Gender Analysis:")
-        for gender, data in summary['demographic_breakdown']['by_gender'].items():
-            logger.info(f"  {gender}: Purchase={data['will_purchase']}, No Purchase={data['will_not_purchase']}, "
-                       f"Rate={data['purchase_rate']:.2%}")
-        
-        # Age breakdown
-        logger.info("Age Analysis:")
-        for age, data in summary['demographic_breakdown']['by_age'].items():
-            logger.info(f"  {age}: Purchase={data['will_purchase']}, No Purchase={data['will_not_purchase']}, "
-                       f"Rate={data['purchase_rate']:.2%}")
+        # Print summary to log
+        reporter.print_summary_log(summary)
         
         logger.info(f"Results saved to: {results_file}")
         
         # Save summary report
-        summary_file = Path("results") / f"summary_report_{results_file.split('_')[-1]}"
-        with open(summary_file, 'w', encoding='utf-8') as f:
-            json.dump(summary, f, indent=2, ensure_ascii=False)
-        
+        timestamp = results_file.split('_')[-1].replace('.json', '')
+        summary_file = reporter.save_summary_report(summary, f"summary_report_{timestamp}.json")
         logger.info(f"Summary report saved to: {summary_file}")
         logger.info("Simulation completed successfully!")
         

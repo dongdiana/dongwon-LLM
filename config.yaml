@@ -19,14 +19,19 @@ paths:
 
 # Persona Configuration
 persona:
-  filename: "persona"  # Persona filename in data/ (.csv extension will be auto-added)
+  filename: "persona_99"  # Persona filename in data/ (.csv extension will be auto-added)
 
 # Product Configuration
 product:
-  filename: "참치액"  # Product info filename in data/product_info/ (.json extension will be auto-added)
+  filename: "스팸"  # Product info filename in data/product_info/ (.json extension will be auto-added)
 
 # OpenAI API Configuration
 openai:
   api_base: "https://api.openai.com/v1"
   max_retries: 3
   retry_delay: 1
+
+# Prompt Configuration
+prompts:
+  system_prompt: "system_prompt_A"  # Which system prompt to use from prompt.yaml
+  user_prompt: "user_prompt_A"      # Which user prompt to use from prompt.yaml
