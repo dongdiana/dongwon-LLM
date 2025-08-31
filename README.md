@@ -4,10 +4,11 @@ A sophisticated LLM-based simulation system that predicts product purchase decis
 
 ## Project Overview
 
-This project leverages OpenAI's GPT-4o-mini model through LangChain to simulate consumer behavior and predict purchase decisions for various products. The system supports two simulation types:
+This project leverages OpenAI's GPT-4o-mini model through LangChain to simulate consumer behavior and predict purchase decisions for various products. The system supports three simulation types:
 
 - **Type A**: Single-question simulations using basic demographic personas
 - **Type B**: Multi-question sessions with detailed persona characteristics and product choice scenarios
+- **Type C**: Product conversion analysis comparing target products with existing consumer preferences
 
 Each persona is independently evaluated based on their unique characteristics including gender, age, household size, income level, and detailed psychographic profiles.
 
@@ -21,8 +22,8 @@ dongwon/
 │   │   └── 그릭요거트.json     # Product market data with target & similar products
 │   └── naver_trend/          # Naver search trend data
 │       └── 그릭요거트.json     # Search trend data by gender and age
-├── persona/                  # Detailed persona profiles (Type B)
-│   └── 그릭요거트.json          # Product-specific detailed personas
+├── persona/                  # Detailed persona profiles (Type B & C)
+│   └── 그릭요거트.json          # Product-specific detailed personas with existing product usage
 ├── src/
 │   ├── loader.py             # Data loading utilities & product option generation
 │   ├── simulator.py          # LLM simulation engine with multi-question support
@@ -31,7 +32,7 @@ dongwon/
 │   ├── simulation_results_*.json
 │   └── summary_report_*.json
 ├── config.yaml              # Model and simulation configuration
-├── prompt.yaml              # LLM prompts and templates (A & B types)
+├── prompt.yaml              # LLM prompts and templates (A, B & C types)
 ├── main.py                  # Main execution script
 ├── requirements.txt         # Python dependencies
 ├── .env                     # Environment variables (OPENAI_API_KEY)
@@ -72,11 +73,11 @@ python main.py
 ```
 
 The system will:
-1. Load persona data based on simulation type (CSV for Type A, JSON for Type B)
-2. Load product market information and generate randomized options (Type B)
+1. Load persona data based on simulation type (CSV for Type A, JSON for Type B & C)
+2. Load product market information and generate options (Type B) or comparison data (Type C)
 3. Run LLM simulations for each persona with automatic rate limiting
-4. Execute single or multi-question sessions based on configuration
-5. Generate and save detailed results with demographic analysis
+4. Execute single questions (Type A), multi-question sessions (Type B), or conversion analysis (Type C)
+5. Generate and save detailed results with demographic analysis and conversion rates
 
 ## Rate Limiting
 
@@ -128,6 +129,32 @@ id,성별,연령대,가구원수,소득구간
 
 **Response Format**: Structured responses with product choices and quantities.
 
+### Type C: Product Conversion Analysis
+
+**Persona Data**: Uses detailed JSON files in `persona/{product}.json` (same as Type B):
+
+```json
+[
+  {
+    "uuid": "367957",
+    "segment_key_input": "고소득(월 700만원 이상)-만 70세 이상-1인가구-남성",
+    "reasoning": "이 페르소나는 고소득의 70대 남성으로, 건강에 대한 관심이 높고...",
+    "기존사용제품": "스팸 25% 라이트",
+    "가구소득": "고소득(월 700만원 이상)",
+    "연령대": "만 70세 이상",
+    "성별": "남성",
+    ...
+  }
+]
+```
+
+**Analysis Focus**: 
+- **Target Product**: New product being promoted (first product in product_info JSON)
+- **Current Product**: Persona's existing product preference from `기존사용제품` field
+- **Conversion Question**: Whether persona would switch from current to target product
+
+**Response Format**: `0` (No conversion) or `1` (Yes, will convert) with reasoning for product switching decision.
+
 ## Configuration Options
 
 #### LLM Settings (`config.yaml`)
@@ -148,7 +175,7 @@ product:
 
 # Prompt Configuration  
 prompts:
-  type: "B"                    # Simulation type: "A" or "B"
+  type: "C"                    # Simulation type: "A", "B", or "C"
 ```
 
 #### Prompt Customization (`prompt.yaml`)
@@ -161,6 +188,10 @@ prompts:
 - **`system_prompt_B`**: Detailed persona with reasoning and characteristics  
 - **`user_prompt_B1`**: Product selection from randomized options
 - **`user_prompt_B2`**: Quantity selection for chosen product
+
+**Type C Prompts**:
+- **`system_prompt_C`**: Detailed persona with reasoning and characteristics (same as Type B)
+- **`user_prompt_C`**: Product conversion analysis comparing target vs current product
 
 #### Product Configuration
 
@@ -260,6 +291,67 @@ python data/naver_trend/preprocessing.py
 
 This converts `data/naver_trend/raw/{product}.json` to `data/naver_trend/{product}.json` format.
 
+## Type C Conversion Analysis Usage
+
+### Setting Up Type C Simulation
+
+1. **Configure simulation type** in `config.yaml`:
+```yaml
+prompts:
+  type: "C"
+```
+
+2. **Ensure persona data includes existing product usage**:
+```json
+{
+  "uuid": "367957",
+  "기존사용제품": "스팸 25% 라이트",
+  // ... other persona fields
+}
+```
+
+3. **Product data structure** in `data/product_info/{product}.json`:
+```json
+{
+  "리챔 오믈레햄": {  // Target product (first key)
+    "product_info": {"content": "..."},
+    "nutrition_per100": {"칼로리": "241 kcal", ...}
+  },
+  "유사제품군": {
+    "스팸 25% 라이트": {  // Current products (in similar products)
+      "product_info": ["..."],
+      "nutrition_per100": {"칼로리": "315 kcal", ...}
+    },
+    "리챔 더블라이트": {
+      "product_info": ["..."],
+      "nutrition_per100": {"칼로리": "230 kcal", ...}
+    }
+  }
+}
+```
+
+### Example Conversion Analysis Output
+
+```
+=== CONVERSION ANALYSIS BY CURRENT PRODUCT ===
+스팸 25% 라이트:
+  Total Valid: 45
+  Conversions: 20 (44.4%)
+  No Conversions: 25
+  Conversion Rate: 44.44%
+
+리챔 더블라이트:
+  Total Valid: 53  
+  Conversions: 36 (67.9%)
+  No Conversions: 17
+  Conversion Rate: 67.92%
+```
+
+This analysis helps identify:
+- Which existing products have users most likely to convert
+- Overall market penetration potential for the target product
+- Demographic patterns in conversion behavior
+
 ## Output Files
 
 ### Simulation Results
@@ -324,6 +416,28 @@ This converts `data/naver_trend/raw/{product}.json` to `data/naver_trend/{produc
 }
 ```
 
+**Type C Results**:
+```json
+{
+  "metadata": {...},
+  "results": [
+    {
+      "persona_id": "367957",
+      "persona": {...},
+      "current_product": "스팸 25% 라이트",
+      "target_product_info": "리챔 오믈레햄: product_info: ..., nutrition_per100: ...",
+      "current_product_info": "스팸 25% 라이트: product_info: ..., nutrition_per100: ...",
+      "conversion_decision": "1",
+      "reasoning": "리챔 오믈레햄의 낮은 나트륨 함량과 편의성이 매력적입니다",
+      "raw_response": "1, 리챔 오믈레햄의 낮은 나트륨 함량과 편의성이 매력적입니다",
+      "response_time": 1.45,
+      "success": true,
+      "timestamp": "2024-01-15T10:30:01"
+    }
+  ]
+}
+```
+
 ### Summary Report
 
 **`results/summary_report_YYYYMMDD_HHMMSS.json`**
@@ -339,6 +453,42 @@ This converts `data/naver_trend/raw/{product}.json` to `data/naver_trend/{produc
     "invalid_responses": 0
   },
   "purchase_rate": 0.54
+}
+```
+
+**Type C Summary Report**:
+```json
+{
+  "simulation_type": "C",
+  "total_personas": 100,
+  "successful_simulations": 98,
+  "failed_simulations": 2,
+  "conversion_decisions": {
+    "no_conversion": 42,
+    "conversion": 56,
+    "invalid_responses": 0
+  },
+  "overall_conversion_rate": 0.57,
+  "conversion_by_current_product": {
+    "스팸 25% 라이트": {
+      "no_conversion": 25,
+      "conversion": 20,
+      "total_valid": 45,
+      "conversion_rate": 0.44,
+      "conversion_percentage": 44.4
+    },
+    "리챔 더블라이트": {
+      "no_conversion": 17,
+      "conversion": 36,
+      "total_valid": 53,
+      "conversion_rate": 0.68,
+      "conversion_percentage": 67.9
+    }
+  },
+  "demographic_breakdown": {
+    "by_gender": {...},
+    "by_age": {...}
+  }
 }
 ```
 
@@ -358,6 +508,13 @@ Multi-question session with:
 - **Question 2**: Quantity selection (`quantity, reasoning`)
 - **Results**: Selected product name, quantity, and complete response history
 
+### Type C Response Format
+Product conversion analysis with:
+- **Conversion Decision**: `0` (No conversion) or `1` (Yes, will convert)
+- **Current Product**: Persona's existing product preference
+- **Target Product**: New product being analyzed for market penetration
+- **Results**: Conversion decision with detailed reasoning and product comparison data
+
 ## Technical Implementation
 
 ### Data Loading (`src/loader.py`)
@@ -368,13 +525,15 @@ Multi-question session with:
 - **`ProductLoader`**: 
   - Processes product market data and nutrition information
   - Generates randomized product options for Type B simulations
+  - Extracts target and current product information for Type C conversion analysis
   - Handles target products and similar product categories
 
 ### LLM Simulation (`src/simulator.py`)
 
-- **`PersonaSimulator`**: Core simulation engine with dual-mode support
+- **`PersonaSimulator`**: Core simulation engine with triple-mode support
 - **Type A**: Single-question purchase decision simulation
 - **Type B**: Multi-question product selection and quantity simulation
+- **Type C**: Product conversion analysis comparing target vs current products
 - Asynchronous processing with configurable concurrency
 - Intelligent prompt formatting based on simulation type
 - Automatic **product market context** loading and **Naver search trend** extraction
@@ -384,8 +543,9 @@ Multi-question session with:
 ### Reporting (`src/report.py`)
 
 - **`SimulationReporter`**: Generates comprehensive analysis reports
-- Handles both Type A and Type B result structures  
+- Handles Type A, B, and C result structures  
 - Demographic breakdown analysis (gender, age groups)
+- Conversion rate analysis by current product (Type C)
 - Automatic detection of simulation type for appropriate metrics
 - Purchase rate calculations and statistical summaries
 

@@ -33,4 +33,4 @@ openai:
 
 # Prompt Configuration
 prompts:
-  type: "B"  # Prompt type: "A" for single question or "B" for multi-question
+  type: "C"  # Prompt type: "A" for single question, "B" for multi-question, or "C" for conversion analysis

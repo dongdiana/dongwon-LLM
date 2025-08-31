@@ -119,17 +119,19 @@ class PersonaSimulator:
         """Validate that the configured prompt type exists in the prompt file."""
         prompt_type = self.config["prompts"]["type"]
         
-        if prompt_type not in ["A", "B"]:
-            raise ValueError(f"Prompt type must be 'A' or 'B', got: {prompt_type}")
+        if prompt_type not in ["A", "B", "C"]:
+            raise ValueError(f"Prompt type must be 'A', 'B', or 'C', got: {prompt_type}")
         
         # Check if required prompts exist based on type
         if prompt_type == "A":
             required_prompts = ["system_prompt_A", "user_prompt_A"]
-        else:  # type B
+        elif prompt_type == "B":
             required_prompts = ["system_prompt_B"]
             # Find all user_prompt_B* prompts
             b_user_prompts = [key for key in self.prompts.keys() if key.startswith("user_prompt_B")]
             required_prompts.extend(b_user_prompts)
+        else:  # type C
+            required_prompts = ["system_prompt_C", "user_prompt_C"]
         
         for prompt_key in required_prompts:
             if prompt_key not in self.prompts:
@@ -238,6 +240,41 @@ class PersonaSimulator:
         
         return system_prompt, user_prompt
     
+    def _format_persona_prompt_type_c(self, persona: Dict[str, Any], target_product: str, current_product: str) -> Tuple[str, str]:
+        """
+        Format the prompts for Type C (product comparison) with detailed persona information.
+        
+        Args:
+            persona: Detailed persona dictionary with reasoning and persona_info
+            target_product: Formatted target product information
+            current_product: Formatted current product information
+            
+        Returns:
+            Tuple of (system_prompt, user_prompt)
+        """
+        # Get product information for formatting
+        product_name = self.get_product_name()
+        market_context = self._get_market_context()
+        search_summary = self._get_search_summary()
+        
+        # Format system prompt with detailed persona data and market information
+        system_prompt = self.prompts["system_prompt_C"].format(
+            reasoning=persona["reasoning"],
+            persona_info=persona["persona_info"],
+            product_name=product_name,
+            market_context=market_context,
+            search_summary=search_summary
+        )
+        
+        # Format user prompt with product comparison information
+        user_prompt = self.prompts["user_prompt_C"].format(
+            product_name=product_name,
+            target_product=target_product,
+            current_product=current_product
+        )
+        
+        return system_prompt, user_prompt
+    
     def get_product_name(self) -> str:
         """Get the product name from config filename."""
         # Use filename from config directly as the product name
@@ -281,8 +318,10 @@ class PersonaSimulator:
         
         if prompt_type == "A":
             return await self._simulate_single_persona_type_a(persona, market_context)
-        else:  # Type B
+        elif prompt_type == "B":
             return await self._simulate_single_persona_type_b(persona)
+        else:  # Type C
+            return await self._simulate_single_persona_type_c(persona)
     
     async def _simulate_single_persona_type_a(self, persona: Dict[str, Any], market_context: Optional[str] = None) -> Dict[str, Any]:
         """
@@ -485,6 +524,100 @@ class PersonaSimulator:
                 "selected_product": None,
                 "selected_quantity": None,
                 "all_responses": [],
+                "response_time": None,
+                "success": False,
+                "error": str(e),
+                "timestamp": datetime.now().isoformat()
+            }
+    
+    async def _simulate_single_persona_type_c(self, persona: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Simulate Type C (product comparison/conversion) for a single persona.
+        
+        Args:
+            persona: Detailed persona dictionary
+            
+        Returns:
+            Dictionary with simulation results
+        """
+        persona_id = persona.get("uuid", "unknown")
+        
+        try:
+            # Get current product from persona
+            current_product_name = persona.get("raw_data", {}).get("기존사용제품", "")
+            if not current_product_name:
+                # Fallback to direct access if raw_data doesn't exist
+                current_product_name = persona.get("기존사용제품", "")
+            
+            if not current_product_name:
+                raise ValueError("No current product found in persona data")
+            
+            # Get target and current product information
+            target_product = self.product_loader.get_target_product_info(self.product_info)
+            current_product = self.product_loader.get_current_product_info(self.product_info, current_product_name)
+            
+            # Format prompts with product comparison data
+            system_prompt, user_prompt = self._format_persona_prompt_type_c(
+                persona, target_product, current_product
+            )
+            
+            # Create messages
+            messages = [
+                SystemMessage(content=system_prompt),
+                HumanMessage(content=user_prompt)
+            ]
+            
+            # Call LLM
+            start_time = time.time()
+            response = await self.llm.ainvoke(messages)
+            end_time = time.time()
+
+            # Apply rate limiting after successful API call
+            self._apply_rate_limiting()
+
+            # Extract and validate response
+            response_text = response.content.strip()
+            conversion_decision, reasoning = self._parse_purchase_decision(response_text)
+            
+            result = {
+                "persona_id": persona_id,
+                "persona": persona,
+                "current_product": current_product_name,
+                "target_product_info": target_product,
+                "current_product_info": current_product,
+                "conversion_decision": conversion_decision,
+                "reasoning": reasoning,
+                "raw_response": response_text,
+                "response_time": end_time - start_time,
+                "success": True,
+                "error": None,
+                "timestamp": datetime.now().isoformat()
+            }
+            
+            # Update statistics
+            self.simulation_stats["successful_simulations"] += 1
+            if conversion_decision in ["0", "1"]:
+                self.simulation_stats["purchase_decisions"][conversion_decision] += 1
+            
+            logger.debug(f"Persona {persona_id}: Conversion decision = {conversion_decision}, Current product = {current_product_name}")
+            return result
+            
+        except Exception as e:
+            logger.error(f"Error simulating persona {persona_id}: {e}")
+            self.simulation_stats["failed_simulations"] += 1
+
+            # Apply rate limiting even on failed requests to maintain consistent pacing
+            self._apply_rate_limiting()
+
+            return {
+                "persona_id": persona_id,
+                "persona": persona,
+                "current_product": persona.get("raw_data", {}).get("기존사용제품", persona.get("기존사용제품", "Unknown")),
+                "target_product_info": None,
+                "current_product_info": None,
+                "conversion_decision": None,
+                "reasoning": None,
+                "raw_response": None,
                 "response_time": None,
                 "success": False,
                 "error": str(e),

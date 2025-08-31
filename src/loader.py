@@ -307,6 +307,108 @@ class ProductLoader:
             logger.warning(f"Error loading Naver trend data from {product_filename}: {e}")
             return {}
     
+    def get_target_product_info(self, product_data: Dict[str, Any]) -> str:
+        """
+        Extract target product information for Type C prompts.
+        
+        Args:
+            product_data: Raw product data dictionary
+            
+        Returns:
+            Formatted string with target product name, product_info content, and nutrition_per100
+        """
+        if not product_data:
+            return "No target product information available."
+        
+        # Find target product (first key that's not "유사제품군" or "market_report")
+        target_product_name = None
+        for key in product_data.keys():
+            if key not in ["유사제품군", "market_report"]:
+                target_product_name = key
+                break
+        
+        if not target_product_name or target_product_name not in product_data:
+            return "Target product not found."
+        
+        target_product = product_data[target_product_name]
+        
+        # Extract content from product_info
+        product_info_content = []
+        if "product_info" in target_product and "content" in target_product["product_info"]:
+            content = target_product["product_info"]["content"]
+            if isinstance(content, list):
+                product_info_content = content
+            else:
+                product_info_content = [content]
+        
+        # Extract nutrition info
+        nutrition_info = target_product.get("nutrition_per100", {})
+        
+        # Format target product information
+        product_info_str = " ".join(product_info_content) if product_info_content else "No product info available"
+        
+        # Handle nested nutrition structure if exists
+        if nutrition_info:
+            # Check if nutrition_per100 has nested structure (like "리챔 오믈레햄 200g")
+            if any(isinstance(v, dict) for v in nutrition_info.values()):
+                # Take the first nested nutrition data
+                for nutrition_key, nutrition_data in nutrition_info.items():
+                    if isinstance(nutrition_data, dict):
+                        nutrition_str = ", ".join([f"{k}: {v}" for k, v in nutrition_data.items()])
+                        break
+                else:
+                    nutrition_str = "No nutrition info available"
+            else:
+                # Direct nutrition data
+                nutrition_str = ", ".join([f"{k}: {v}" for k, v in nutrition_info.items()])
+        else:
+            nutrition_str = "No nutrition info available"
+        
+        return f"{target_product_name}: product_info: {product_info_str}, nutrition_per100: {nutrition_str}"
+    
+    def get_current_product_info(self, product_data: Dict[str, Any], current_product_name: str) -> str:
+        """
+        Extract current product information for Type C prompts based on persona's existing product.
+        
+        Args:
+            product_data: Raw product data dictionary
+            current_product_name: Name of the current product used by persona
+            
+        Returns:
+            Formatted string with current product name, product_info, and nutrition_per100
+        """
+        if not product_data or not current_product_name:
+            return "No current product information available."
+        
+        # Look for the current product in similar products section
+        if "유사제품군" not in product_data:
+            return "No similar products section found."
+        
+        similar_products = product_data["유사제품군"]
+        
+        # Find matching product in similar products
+        current_product_data = None
+        for product_name, product_info in similar_products.items():
+            if product_name == current_product_name:
+                current_product_data = product_info
+                break
+        
+        if not current_product_data:
+            return f"Current product '{current_product_name}' not found in similar products."
+        
+        # Extract product_info (list format for similar products)
+        product_info_content = current_product_data.get("product_info", [])
+        if isinstance(product_info_content, list):
+            product_info_str = " ".join(product_info_content)
+        else:
+            product_info_str = str(product_info_content)
+        
+        # Extract nutrition info
+        nutrition_info = current_product_data.get("nutrition_per100", {})
+        nutrition_str = ", ".join([f"{k}: {v}" for k, v in nutrition_info.items()]) if nutrition_info else "No nutrition info available"
+        
+        return f"{current_product_name}: product_info: {product_info_str}, nutrition_per100: {nutrition_str}"
+    
     def generate_product_options(self, product_data: Dict[str, Any]) -> Tuple[str, List[str]]:
         """
         Generate randomized product options from product data for Type B prompts.

@@ -68,8 +68,12 @@ async def main():
         if prompt_type == "A":
             # Use CSV personas for Type A
             personas = persona_loader.load_all_personas()
-        else:  # Type B
+        elif prompt_type == "B":
             # Use detailed JSON personas for Type B
+            product_name = config["product"]["filename"]
+            personas = persona_loader.load_detailed_personas(product_name)
+        else:  # Type C
+            # Use detailed JSON personas for Type C (same as Type B)
             product_name = config["product"]["filename"]
             personas = persona_loader.load_detailed_personas(product_name)
         
