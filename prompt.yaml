@@ -74,4 +74,8 @@ system_prompt_C: |
 
 user_prompt_C: |
   질문: 새로운 **{product_name}**이 출시되었습니다. 기존 제품이 아닌 신제품을 구매하시겠습니까?
-  
+  기존제품: {current_product}
+  신제품: {target_product}
+  선택지: 1=YES, 0=NO
+  답변 형식: 선택지 숫자, 이유 설명
+
