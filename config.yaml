@@ -23,7 +23,7 @@ persona:
 
 # Product Configuration
 product:
-  filename: "참치캔"  # Product info filename in data/product_info/ (.json extension will be auto-added)
+  filename: "스팸"  # Product info filename in data/product_info/ (.json extension will be auto-added)
 
 # OpenAI API Configuration
 openai:
