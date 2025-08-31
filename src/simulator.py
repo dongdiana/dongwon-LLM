@@ -209,15 +209,24 @@ class PersonaSimulator:
         Returns:
             Tuple of (system_prompt, user_prompt)
         """
-        # Format system prompt with detailed persona data
+        # Get product information for formatting
+        product_name = self.get_product_name()
+        market_context = self._get_market_context()
+        search_summary = self._get_search_summary()
+        
+        # Format system prompt with detailed persona data and market information
         system_prompt = self.prompts["system_prompt_B"].format(
             reasoning=persona["reasoning"],
-            persona_info=persona["persona_info"]
+            persona_info=persona["persona_info"],
+            product_name=product_name,
+            market_context=market_context,
+            search_summary=search_summary
         )
         
         # Format user prompt based on which question this is
         if user_prompt_key == "user_prompt_B1":
             user_prompt = self.prompts[user_prompt_key].format(
+                product_name=product_name,
                 product_options=product_options
             )
         elif user_prompt_key == "user_prompt_B2":

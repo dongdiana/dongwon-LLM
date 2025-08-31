@@ -23,7 +23,7 @@ persona:
 
 # Product Configuration
 product:
-  filename: "참치액"  # Product info filename in data/product_info/ (.json extension will be auto-added)
+  filename: "참치캔"  # Product info filename in data/product_info/ (.json extension will be auto-added)
 
 # OpenAI API Configuration
 openai:
@@ -33,4 +33,4 @@ openai:
 
 # Prompt Configuration
 prompts:
-  type: "A"  # Prompt type: "A" for single question or "B" for multi-question
+  type: "B"  # Prompt type: "A" for single question or "B" for multi-question
