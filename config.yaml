@@ -8,7 +8,7 @@ llm:
 simulation:
   output_format: "json"
   save_detailed_logs: true
-  batch_size: 10  # Number of concurrent requests
+  batch_size: 20  # Number of concurrent requests
   
 # File Paths
 paths:
@@ -23,7 +23,7 @@ persona:
 
 # Product Configuration
 product:
-  filename: "스팸"  # Product info filename in data/product_info/ (.json extension will be auto-added)
+  filename: "그릭요거트"  # Product info filename in data/product_info/ (.json extension will be auto-added)
 
 # OpenAI API Configuration
 openai:

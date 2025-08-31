@@ -82,14 +82,14 @@ class PersonaSimulator:
 
         # Check for 100-request interval
         if self.request_counter % 100 == 0:
-            wait_time = 60  # 1 minute
+            wait_time = 10
             logger.info(f"Rate limit: Completed {self.request_counter} requests. Taking {wait_time}s break...")
             time.sleep(wait_time)
             logger.info("Rate limit break completed. Resuming simulation...")
 
         # Check for 10-request interval (but not also divisible by 100)
-        elif self.request_counter % 10 == 0:
-            wait_time = 5  # 5 seconds
+        elif self.request_counter % 20 == 0:
+            wait_time = 3  # 3 seconds
             logger.info(f"Rate limit: Completed {self.request_counter} requests. Taking {wait_time}s break...")
             time.sleep(wait_time)
     
