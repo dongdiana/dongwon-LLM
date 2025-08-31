@@ -364,7 +364,7 @@ class ProductLoader:
         else:
             nutrition_str = "No nutrition info available"
         
-        return f"{target_product_name}: product_info: {product_info_str}, nutrition_per100: {nutrition_str}"
+        return f"{target_product_name}: {product_info_str}, {nutrition_str}"
     
     def get_current_product_info(self, product_data: Dict[str, Any], current_product_name: str) -> str:
         """
@@ -407,7 +407,7 @@ class ProductLoader:
         nutrition_info = current_product_data.get("nutrition_per100", {})
         nutrition_str = ", ".join([f"{k}: {v}" for k, v in nutrition_info.items()]) if nutrition_info else "No nutrition info available"
         
-        return f"{current_product_name}: product_info: {product_info_str}, nutrition_per100: {nutrition_str}"
+        return f"{current_product_name}: {product_info_str}, {nutrition_str}"
     
     def generate_product_options(self, product_data: Dict[str, Any]) -> Tuple[str, List[str]]:
         """
