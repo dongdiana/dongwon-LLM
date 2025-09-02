@@ -48,12 +48,24 @@ class PersonaSimulator:
         # Initialize product loader
         self.product_loader = ProductLoader(self.config["paths"]["product_data_dir"])
         
-        # Load product data
-        self.product_info = self.product_loader.load_product_data(self.config["product"]["filename"])
+        # Load product data based on prompt type
+        prompt_type = self.config["prompts"]["type"]
+        if prompt_type == "D":
+            # Load TypeD product data
+            self.product_info = self.product_loader.load_type_d_product_data(self.config["product"]["filename"])
+            self.type_d_data = self.product_info  # Store TypeD data separately for easy access
+            logger.info(f"Loaded TypeD product data for: {self.config['product']['filename']}")
+        else:
+            # Load regular product data
+            self.product_info = self.product_loader.load_product_data(self.config["product"]["filename"])
+            self.type_d_data = None
         
-        # Load Naver trend data once during initialization
-        self.naver_trend_data = self.product_loader.load_naver_trend_data(self.config["product"]["filename"])
-        logger.info(f"Loaded trend data for product: {self.config['product']['filename']}")
+        # Load Naver trend data once during initialization (not used for TypeD)
+        if prompt_type != "D":
+            self.naver_trend_data = self.product_loader.load_naver_trend_data(self.config["product"]["filename"])
+            logger.info(f"Loaded trend data for product: {self.config['product']['filename']}")
+        else:
+            self.naver_trend_data = {}
         
         self.llm = self._initialize_llm()
         
@@ -119,8 +131,8 @@ class PersonaSimulator:
         """Validate that the configured prompt type exists in the prompt file."""
         prompt_type = self.config["prompts"]["type"]
         
-        if prompt_type not in ["A", "B", "C"]:
-            raise ValueError(f"Prompt type must be 'A', 'B', or 'C', got: {prompt_type}")
+        if prompt_type not in ["A", "B", "C", "D"]:
+            raise ValueError(f"Prompt type must be 'A', 'B', 'C', or 'D', got: {prompt_type}")
         
         # Check if required prompts exist based on type
         if prompt_type == "A":
@@ -130,8 +142,10 @@ class PersonaSimulator:
             # Find all user_prompt_B* prompts
             b_user_prompts = [key for key in self.prompts.keys() if key.startswith("user_prompt_B")]
             required_prompts.extend(b_user_prompts)
-        else:  # type C
+        elif prompt_type == "C":
             required_prompts = ["system_prompt_C", "user_prompt_C"]
+        else:  # type D
+            required_prompts = ["system_prompt_D", "user_prompt_D"]
         
         for prompt_key in required_prompts:
             if prompt_key not in self.prompts:
@@ -275,14 +289,51 @@ class PersonaSimulator:
         
         return system_prompt, user_prompt
     
+    def _format_persona_prompt_type_d(self, persona: Dict[str, Any]) -> Tuple[str, str]:
+        """
+        Format the prompts for Type D with detailed persona information and TypeD product data.
+        
+        Args:
+            persona: Detailed persona dictionary with reasoning and persona_info
+            
+        Returns:
+            Tuple of (system_prompt, user_prompt)
+        """
+        # Get product information for TypeD
+        product_name = self.get_product_name()
+        product_info = self.product_loader.get_type_d_product_info(self.type_d_data)
+        product_options = self.product_loader.get_type_d_product_options(self.type_d_data)
+        
+        # Format system prompt with detailed persona data and product information
+        system_prompt = self.prompts["system_prompt_D"].format(
+            reasoning=persona["reasoning"],
+            persona_info=persona["persona_info"],
+            product_name=product_name,
+            product_info=product_info
+        )
+        
+        # Format user prompt with product options
+        user_prompt = self.prompts["user_prompt_D"].format(
+            product_name=product_name,
+            product_options=product_options
+        )
+        
+        return system_prompt, user_prompt
+    
     def get_product_name(self) -> str:
-        """Get the product name from config filename."""
-        # Use filename from config directly as the product name
-        filename = self.config["product"]["filename"]
-        # Remove .json extension if present
-        if filename.endswith('.json'):
-            return filename[:-5]
-        return filename
+        """Get the product name from config filename or TypeD data."""
+        prompt_type = self.config["prompts"]["type"]
+        
+        if prompt_type == "D" and self.type_d_data:
+            # For TypeD, get product name from top-level schema in TypeD data
+            return self.product_loader.get_type_d_product_name(self.type_d_data)
+        else:
+            # Use filename from config directly as the product name
+            filename = self.config["product"]["filename"]
+            # Remove .json extension if present
+            if filename.endswith('.json'):
+                return filename[:-5]
+            return filename
     
     def _get_market_context(self) -> str:
         """Extract market context from product info only (excludes search/trend data)."""
@@ -320,8 +371,10 @@ class PersonaSimulator:
             return await self._simulate_single_persona_type_a(persona, market_context)
         elif prompt_type == "B":
             return await self._simulate_single_persona_type_b(persona)
-        else:  # Type C
+        elif prompt_type == "C":
             return await self._simulate_single_persona_type_c(persona)
+        else:  # Type D
+            return await self._simulate_single_persona_type_d(persona)
     
     async def _simulate_single_persona_type_a(self, persona: Dict[str, Any], market_context: Optional[str] = None) -> Dict[str, Any]:
         """
@@ -624,6 +677,82 @@ class PersonaSimulator:
                 "timestamp": datetime.now().isoformat()
             }
     
+    async def _simulate_single_persona_type_d(self, persona: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Simulate Type D (TypeD product selection) for a single persona.
+        
+        Args:
+            persona: Detailed persona dictionary
+            
+        Returns:
+            Dictionary with simulation results
+        """
+        persona_id = persona.get("uuid", "unknown")
+        
+        try:
+            # Format prompts with TypeD product data
+            system_prompt, user_prompt = self._format_persona_prompt_type_d(persona)
+            
+            # Create messages
+            messages = [
+                SystemMessage(content=system_prompt),
+                HumanMessage(content=user_prompt)
+            ]
+            
+            # Call LLM
+            start_time = time.time()
+            response = await self.llm.ainvoke(messages)
+            end_time = time.time()
+
+            # Apply rate limiting after successful API call
+            self._apply_rate_limiting()
+
+            # Extract and validate response for TypeD (category selection)
+            response_text = response.content.strip()
+            selection_number, selected_category, reasoning = self._parse_type_d_selection(response_text)
+            
+            result = {
+                "persona_id": persona_id,
+                "persona": persona,
+                "product_name": self.get_product_name(),
+                "selection_number": selection_number,
+                "selected_category": selected_category,
+                "reasoning": reasoning,
+                "raw_response": response_text,
+                "response_time": end_time - start_time,
+                "success": True,
+                "error": None,
+                "timestamp": datetime.now().isoformat()
+            }
+            
+            # Update statistics
+            self.simulation_stats["successful_simulations"] += 1
+            # For TypeD, we don't use the purchase_decisions tracking
+            
+            logger.debug(f"Persona {persona_id}: Selected category = {selected_category} (option {selection_number})")
+            return result
+            
+        except Exception as e:
+            logger.error(f"Error simulating persona {persona_id}: {e}")
+            self.simulation_stats["failed_simulations"] += 1
+
+            # Apply rate limiting even on failed requests to maintain consistent pacing
+            self._apply_rate_limiting()
+
+            return {
+                "persona_id": persona_id,
+                "persona": persona,
+                "product_name": self.get_product_name() if self.type_d_data else "Unknown",
+                "selection_number": None,
+                "selected_category": None,
+                "reasoning": None,
+                "raw_response": None,
+                "response_time": None,
+                "success": False,
+                "error": str(e),
+                "timestamp": datetime.now().isoformat()
+            }
+    
     def _parse_purchase_decision(self, response: str) -> Tuple[Optional[str], Optional[str]]:
         """
         Parse the LLM response to extract purchase decision and reasoning (Type A).
@@ -763,6 +892,76 @@ class PersonaSimulator:
         # If no clear quantity found
         logger.warning(f"Could not parse quantity selection from response: {response}")
         return None, None
+    
+    def _parse_type_d_selection(self, response: str) -> Tuple[Optional[str], Optional[str], Optional[str]]:
+        """
+        Parse the LLM response to extract TypeD category selection and reasoning.
+        
+        Args:
+            response: Raw LLM response text
+            
+        Returns:
+            Tuple of (selection_number, selected_category, reasoning)
+        """
+        # Clean the response
+        cleaned = response.strip()
+        
+        # Get category options from TypeD data
+        if not self.type_d_data:
+            logger.warning("No TypeD data available for parsing")
+            return None, None, None
+        
+        categories = []
+        product_name = self.product_loader.get_type_d_product_name(self.type_d_data)
+        if product_name in self.type_d_data and "category" in self.type_d_data[product_name]:
+            categories = self.type_d_data[product_name]["category"]
+        
+        if not categories:
+            logger.warning("No categories found in TypeD data")
+            return None, None, None
+        
+        # Try to match pattern: "number, reasoning" or "number reasoning"
+        patterns = [
+            r'^(\d+)\s*,\s*(.+)$',  # "1, reasoning"
+            r'^(\d+)\s+(.+)$',      # "1 reasoning"
+            r'^(\d+)\s*(.+)$'       # "1reasoning"
+        ]
+        
+        for pattern in patterns:
+            match = re.match(pattern, cleaned, re.DOTALL)
+            if match:
+                number_str = match.group(1)
+                reasoning = match.group(2).strip()
+                
+                try:
+                    number = int(number_str)
+                    if 1 <= number <= len(categories):
+                        selected_category = categories[number - 1]  # Convert to 0-based index
+                        return number_str, selected_category, reasoning
+                    else:
+                        logger.warning(f"Selected number {number} is out of range (1-{len(categories)})")
+                        return number_str, None, reasoning
+                except ValueError:
+                    logger.warning(f"Could not convert '{number_str}' to integer")
+                    return number_str, None, reasoning
+        
+        # If structured format not found, try to find just the number
+        for char in cleaned:
+            if char.isdigit():
+                try:
+                    number = int(char)
+                    if 1 <= number <= len(categories):
+                        selected_category = categories[number - 1]
+                        # Extract reasoning as everything after the number
+                        idx = cleaned.find(char)
+                        reasoning = cleaned[idx+1:].strip().lstrip(',').strip()
+                        return char, selected_category, reasoning if reasoning else None
+                except ValueError:
+                    continue
+        
+        # If no clear selection found
+        logger.warning(f"Could not parse TypeD selection from response: {response}")
+        return None, None, None
     
     async def simulate_all_personas(self, personas: List[Dict[str, Any]], market_context: Optional[str] = None) -> List[Dict[str, Any]]:
         """

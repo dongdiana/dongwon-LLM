@@ -19,11 +19,17 @@ paths:
 
 # Persona Configuration
 persona:
-  filename: "persona"  # Persona filename in data/ (.csv extension will be auto-added)
+  # Type A: Uses CSV file from data/ directory
+  filename: "persona"  # CSV filename in data/ (.csv extension will be auto-added) - Only used for Type A
+  
+  # Type B & C: Uses JSON file from persona/ directory
+  # File path: persona/{product.filename}.json - Uses product filename automatically
+  
+  sample_size: 0  # Number of personas to randomly sample (0 = use all personas)
 
 # Product Configuration
 product:
-  filename: "그릭요거트"  # Product info filename in data/product_info/ (.json extension will be auto-added)
+  filename: "참치캔"  # Product info filename in data/product_info/ (.json extension will be auto-added)
 
 # OpenAI API Configuration
 openai:
@@ -33,4 +39,4 @@ openai:
 
 # Prompt Configuration
 prompts:
-  type: "C"  # Prompt type: "A" for single question, "B" for multi-question, or "C" for conversion analysis
+  type: "D"  # Prompt type: "A" for single question, "B" for multi-question, "C" for conversion analysis, or "D" for TypeD product selection

@@ -18,9 +18,10 @@ logger = logging.getLogger(__name__)
 class PersonaLoader:
     """Loads persona data from CSV file or detailed JSON persona files."""
     
-    def __init__(self, persona_data_dir: str, persona_filename: str = None):
+    def __init__(self, persona_data_dir: str, persona_filename: str = None, sample_size: int = 0):
         self.persona_data_dir = Path(persona_data_dir)
         self.persona_filename = persona_filename
+        self.sample_size = sample_size  # 0 means use all personas
         
     def load_all_personas(self) -> List[Dict[str, Any]]:
         """
@@ -68,6 +69,14 @@ class PersonaLoader:
                     logger.warning(f"Invalid persona with id {persona.get('id', 'unknown')}")
             
             logger.info(f"Successfully loaded {len(personas)} valid personas")
+            
+            # Apply random sampling if requested
+            if self.sample_size > 0 and self.sample_size < len(personas):
+                original_count = len(personas)
+                random.shuffle(personas)
+                personas = personas[:self.sample_size]
+                logger.info(f"Random sampling applied: using {len(personas)} out of {original_count} personas")
+            
             return personas
             
         except Exception as e:
@@ -150,6 +159,14 @@ class PersonaLoader:
                 personas.append(processed_persona)
             
             logger.info(f"Successfully processed {len(personas)} detailed personas")
+            
+            # Apply random sampling if requested
+            if self.sample_size > 0 and self.sample_size < len(personas):
+                original_count = len(personas)
+                random.shuffle(personas)
+                personas = personas[:self.sample_size]
+                logger.info(f"Random sampling applied: using {len(personas)} out of {original_count} personas")
+            
             return personas
             
         except Exception as e:
@@ -190,6 +207,35 @@ class ProductLoader:
                 return data
         except Exception as e:
             logger.error(f"Error loading product data from {product_filename}: {e}")
+            return {}
+    
+    def load_type_d_product_data(self, product_filename: str) -> Dict[str, Any]:
+        """
+        Load TypeD product data from TypeD folder.
+        
+        Args:
+            product_filename: Name of the product data file (with or without .json extension)
+        
+        Returns:
+            Dictionary containing TypeD product data
+        """
+        # Auto-append .json extension if not present
+        if not product_filename.endswith('.json'):
+            product_filename += '.json'
+            
+        type_d_file = self.product_data_dir / "TypeD" / product_filename
+        
+        if not type_d_file.exists():
+            logger.error(f"TypeD product data file not found: {type_d_file}")
+            return {}
+            
+        try:
+            with open(type_d_file, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                logger.info(f"Successfully loaded TypeD product data from {type_d_file}")
+                return data
+        except Exception as e:
+            logger.error(f"Error loading TypeD product data from {product_filename}: {e}")
             return {}
     
     def format_market_context(self, product_data: Dict[str, Any]) -> str:
@@ -493,3 +539,85 @@ class ProductLoader:
         options_string = "\n".join(formatted_options)
         
         return options_string, list(product_names)
+    
+    def get_type_d_product_name(self, type_d_data: Dict[str, Any]) -> str:
+        """
+        Extract the top-level product name from TypeD data.
+        
+        Args:
+            type_d_data: TypeD product data dictionary
+            
+        Returns:
+            Top-level product name (first key in the JSON)
+        """
+        if not type_d_data:
+            return "Unknown Product"
+        
+        # Get the first key (top-level schema)
+        for key in type_d_data.keys():
+            return key
+        
+        return "Unknown Product"
+    
+    def get_type_d_product_info(self, type_d_data: Dict[str, Any]) -> str:
+        """
+        Extract product_info content from TypeD data.
+        
+        Args:
+            type_d_data: TypeD product data dictionary
+            
+        Returns:
+            Formatted product info content (excluding 출처)
+        """
+        if not type_d_data:
+            return "No product information available."
+        
+        # Get the first product (top-level)
+        product_name = self.get_type_d_product_name(type_d_data)
+        if product_name not in type_d_data:
+            return "No product information available."
+        
+        product_data = type_d_data[product_name]
+        
+        # Extract product_info content
+        if "product_info" in product_data and "content" in product_data["product_info"]:
+            content = product_data["product_info"]["content"]
+            if isinstance(content, list):
+                return "\n".join([f"- {item}" for item in content])
+            else:
+                return f"- {content}"
+        
+        return "No product information available."
+    
+    def get_type_d_product_options(self, type_d_data: Dict[str, Any]) -> str:
+        """
+        Extract category information as product options for TypeD.
+        
+        Args:
+            type_d_data: TypeD product data dictionary
+            
+        Returns:
+            Formatted product options string
+        """
+        if not type_d_data:
+            return "No product options available."
+        
+        # Get the first product (top-level)
+        product_name = self.get_type_d_product_name(type_d_data)
+        if product_name not in type_d_data:
+            return "No product options available."
+        
+        product_data = type_d_data[product_name]
+        
+        # Extract category as options
+        if "category" in product_data:
+            categories = product_data["category"]
+            if isinstance(categories, list):
+                formatted_options = []
+                for i, category in enumerate(categories, 1):
+                    formatted_options.append(f"{i}. {category}")
+                return "\n".join(formatted_options)
+            else:
+                return f"1. {categories}"
+        
+        return "No product options available."

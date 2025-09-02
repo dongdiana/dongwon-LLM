@@ -59,7 +59,8 @@ async def main():
         logger.info("Initializing data loaders...")
         persona_data_dir = config["paths"]["persona_data_dir"]
         persona_filename = config["persona"]["filename"]
-        persona_loader = PersonaLoader(persona_data_dir, persona_filename)
+        persona_sample_size = config["persona"].get("sample_size", 0)
+        persona_loader = PersonaLoader(persona_data_dir, persona_filename, persona_sample_size)
         
         # Load personas based on prompt type
         logger.info("Loading persona data...")
@@ -67,14 +68,26 @@ async def main():
         
         if prompt_type == "A":
             # Use CSV personas for Type A
+            csv_file = f"data/{persona_filename}.csv" if not persona_filename.endswith('.csv') else f"data/{persona_filename}"
+            logger.info(f"Type A simulation: Loading personas from {csv_file}")
             personas = persona_loader.load_all_personas()
         elif prompt_type == "B":
             # Use detailed JSON personas for Type B
             product_name = config["product"]["filename"]
+            json_file = f"persona/{product_name}.json"
+            logger.info(f"Type B simulation: Loading personas from {json_file}")
             personas = persona_loader.load_detailed_personas(product_name)
-        else:  # Type C
+        elif prompt_type == "C":
             # Use detailed JSON personas for Type C (same as Type B)
             product_name = config["product"]["filename"]
+            json_file = f"persona/{product_name}.json"
+            logger.info(f"Type C simulation: Loading personas from {json_file}")
+            personas = persona_loader.load_detailed_personas(product_name)
+        else:  # Type D
+            # Use detailed JSON personas for Type D (same as Type B & C)
+            product_name = config["product"]["filename"]
+            json_file = f"persona/{product_name}.json"
+            logger.info(f"Type D simulation: Loading personas from {json_file}")
             personas = persona_loader.load_detailed_personas(product_name)
         
         if not personas:

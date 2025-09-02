@@ -4,11 +4,12 @@ A sophisticated LLM-based simulation system that predicts product purchase decis
 
 ## Project Overview
 
-This project leverages OpenAI's GPT-4o-mini model through LangChain to simulate consumer behavior and predict purchase decisions for various products. The system supports three simulation types:
+This project leverages OpenAI's GPT-4o-mini model through LangChain to simulate consumer behavior and predict purchase decisions for various products. The system supports four simulation types:
 
 - **Type A**: Single-question simulations using basic demographic personas
 - **Type B**: Multi-question sessions with detailed persona characteristics and product choice scenarios
 - **Type C**: Product conversion analysis comparing target products with existing consumer preferences
+- **Type D**: TypeD product selection using specialized product data structure
 
 Each persona is independently evaluated based on their unique characteristics including gender, age, household size, income level, and detailed psychographic profiles.
 
@@ -155,6 +156,50 @@ id,성별,연령대,가구원수,소득구간
 
 **Response Format**: `0` (No conversion) or `1` (Yes, will convert) with reasoning for product switching decision.
 
+### Type D: TypeD Product Selection
+
+**Persona Data**: Uses detailed JSON files in `persona/{product}.json` (same as Type B & C):
+
+```json
+[
+  {
+    "uuid": "367957",
+    "segment_key_input": "고소득(월 700만원 이상)-만 70세 이상-1인가구-남성",
+    "reasoning": "이 페르소나는 고소득의 70대 남성으로, 건강에 대한 관심이 높고...",
+    "가구소득": "고소득(월 700만원 이상)",
+    "연령대": "만 70세 이상",
+    "성별": "남성",
+    ...
+  }
+]
+```
+
+**Product Data**: Uses specialized TypeD structure in `data/product_info/TypeD/{product}.json`:
+
+```json
+{
+  "동원맛참 고소참기름": {
+    "category": ["동원맛참 고소참기름 90g", "동원맛참 고소참기름 135g"],
+    "product_info": {
+      "content": [
+        "'동원맛참 고소참기름'은 참기름과 특제 소스로 간을 맞춰 별도 조리 없이 밥과 바로 먹는 '2세대 참치캔'이다.",
+        "'동원맛참 고소참기름'은 90g·135g 두 규격으로 판매되며...",
+        ...
+      ],
+      "출처": ["https://example.com/..."]
+    }
+  }
+}
+```
+
+**Key Features**:
+- **Product Name**: Extracted from top-level schema key ("동원맛참 고소참기름")
+- **Product Info**: Uses `product_info.content` array (excluding `출처`)
+- **Product Options**: Uses `category` array as selection choices
+- **Data Source**: `data/product_info/TypeD/` folder instead of regular `data/product_info/`
+
+**Response Format**: Selection from category options with reasoning for choice.
+
 ## Configuration Options
 
 #### LLM Settings (`config.yaml`)
@@ -169,14 +214,44 @@ simulation:
   batch_size: 10               # Concurrent requests
   save_detailed_logs: true     # Enable detailed logging
 
+# Persona Configuration
+persona:
+  # Type A: Uses CSV file from data/ directory
+  filename: "persona"          # CSV filename in data/ (.csv extension auto-added) - Only used for Type A
+  
+  # Type B & C: Uses JSON file from persona/ directory
+  # File path: persona/{product.filename}.json - Uses product filename automatically
+  
+  sample_size: 0               # Number of personas to randomly sample (0 = use all personas)
+
 # Product Configuration
 product:
   filename: "그릭요거트"         # Product info filename (auto-adds .json)
 
 # Prompt Configuration  
 prompts:
-  type: "C"                    # Simulation type: "A", "B", or "C"
+  type: "D"                    # Simulation type: "A", "B", "C", or "D"
 ```
+
+#### Persona File Configuration
+
+**Important:** Persona loading works differently for each simulation type:
+
+- **Type A**: Uses CSV file from `data/{persona.filename}.csv`
+  - Example: `data/persona.csv` 
+  - Contains basic demographic data (id, 성별, 연령대, 가구원수, 소득구간)
+
+- **Type B, C & D**: Uses JSON file from `persona/{product.filename}.json`
+  - Example: `persona/그릭요거트.json`
+  - Contains detailed persona profiles with reasoning and characteristics
+  - **Note:** The `persona.filename` setting is ignored for Types B, C & D
+
+#### Random Sampling
+
+Set `persona.sample_size` to control how many personas are used:
+- `0`: Use all available personas (default)
+- `>0`: Randomly sample N personas from the available set
+- Works for all simulation types (A, B, C, D)
 
 #### Prompt Customization (`prompt.yaml`)
 
@@ -192,6 +267,10 @@ prompts:
 **Type C Prompts**:
 - **`system_prompt_C`**: Detailed persona with reasoning and characteristics (same as Type B)
 - **`user_prompt_C`**: Product conversion analysis comparing target vs current product
+
+**Type D Prompts**:
+- **`system_prompt_D`**: Detailed persona with reasoning and characteristics
+- **`user_prompt_D`**: TypeD product selection from category options
 
 #### Product Configuration
 

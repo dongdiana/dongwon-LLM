@@ -48,6 +48,12 @@ class SimulationReporter:
         
         file_path = self.results_dir / filename
         
+        # Extract participant UIDs from results
+        participant_uids = []
+        for result in results:
+            if result.get("success", False) and result.get("persona_id"):
+                participant_uids.append(result["persona_id"])
+        
         # Prepare output data
         output_data = {
             "metadata": {
@@ -55,6 +61,7 @@ class SimulationReporter:
                 "model_used": model_name,
                 "product_name": product_name,
                 "total_personas": len(results),
+                "participant_uids": participant_uids,
                 "statistics": simulation_stats
             },
             "results": results
@@ -121,6 +128,8 @@ class SimulationReporter:
             return self._generate_type_b_report(results, simulation_stats)
         elif prompt_type == "C":
             return self._generate_type_c_report(results, simulation_stats)
+        elif prompt_type == "D":
+            return self._generate_type_d_report(results, simulation_stats)
         else:
             return self._generate_type_a_report(results, simulation_stats)
     
@@ -129,6 +138,9 @@ class SimulationReporter:
         """Generate Type A specific report with traditional purchase decision analysis."""
         successful_results = [r for r in results if r["success"]]
         purchase_counts = {"0": 0, "1": 0, "invalid": 0}
+        
+        # Extract participant UIDs
+        participant_uids = [r.get("persona_id") for r in successful_results if r.get("persona_id")]
         
         # Initialize demographic breakdowns
         gender_breakdown = {
@@ -189,6 +201,7 @@ class SimulationReporter:
             "total_personas": len(results),
             "successful_simulations": len(successful_results),
             "failed_simulations": len(results) - len(successful_results),
+            "participant_uids": participant_uids,
             "purchase_decisions": {
                 "will_not_purchase": purchase_counts["0"],
                 "will_purchase": purchase_counts["1"],
@@ -208,6 +221,9 @@ class SimulationReporter:
                                simulation_stats: Dict[str, Any]) -> Dict[str, Any]:
         """Generate Type B specific report with product selection analysis."""
         successful_results = [r for r in results if r["success"]]
+        
+        # Extract participant UIDs
+        participant_uids = [r.get("persona_id") for r in successful_results if r.get("persona_id")]
         
         # Collect all unique products from all results
         all_products = set()
@@ -338,6 +354,7 @@ class SimulationReporter:
             "total_personas": len(results),
             "successful_simulations": len(successful_results),
             "failed_simulations": len(results) - len(successful_results),
+            "participant_uids": participant_uids,
             "product_analysis": product_analysis,
             "demographic_breakdown": {
                 "by_gender": calculate_demographic_rates(gender_breakdown),
@@ -353,6 +370,9 @@ class SimulationReporter:
         """Generate Type C specific report with conversion rate analysis by current product."""
         successful_results = [r for r in results if r["success"]]
         conversion_counts = {"0": 0, "1": 0, "invalid": 0}
+        
+        # Extract participant UIDs
+        participant_uids = [r.get("persona_id") for r in successful_results if r.get("persona_id")]
         
         # Initialize conversion analysis by current product
         current_product_conversion = {}
@@ -448,6 +468,7 @@ class SimulationReporter:
             "total_personas": len(results),
             "successful_simulations": len(successful_results),
             "failed_simulations": len(results) - len(successful_results),
+            "participant_uids": participant_uids,
             "conversion_decisions": {
                 "no_conversion": conversion_counts["0"],
                 "conversion": conversion_counts["1"],
@@ -458,6 +479,132 @@ class SimulationReporter:
             "demographic_breakdown": {
                 "by_gender": calculate_rates(gender_breakdown),
                 "by_age": calculate_rates(age_breakdown)
+            },
+            "statistics": simulation_stats
+        }
+        
+        return summary
+    
+    def _generate_type_d_report(self, results: List[Dict[str, Any]], 
+                               simulation_stats: Dict[str, Any]) -> Dict[str, Any]:
+        """Generate Type D specific report with TypeD category selection analysis."""
+        successful_results = [r for r in results if r["success"]]
+        
+        # Get all unique categories from successful results
+        all_categories = set()
+        for result in successful_results:
+            if result.get("selected_category"):
+                all_categories.add(result["selected_category"])
+        
+        all_categories = sorted(list(all_categories))
+        
+        # Initialize category selection counts
+        category_counts = {category: 0 for category in all_categories}
+        category_counts["no_selection"] = 0  # For invalid or no selection
+        
+        # Extract participant UIDs
+        participant_uids = [r.get("persona_id") for r in successful_results if r.get("persona_id")]
+        
+        # Initialize demographic breakdowns by category
+        gender_breakdown = {
+            "남성": {category: 0 for category in all_categories},
+            "여성": {category: 0 for category in all_categories}
+        }
+        # Add no_selection to each gender
+        for gender in gender_breakdown:
+            gender_breakdown[gender]["no_selection"] = 0
+        
+        age_breakdown = {
+            "20대": {category: 0 for category in all_categories},
+            "30대": {category: 0 for category in all_categories},
+            "40대": {category: 0 for category in all_categories},
+            "50대": {category: 0 for category in all_categories},
+            "60대": {category: 0 for category in all_categories},
+            "70대 이상": {category: 0 for category in all_categories}
+        }
+        # Add no_selection to each age group
+        for age_group in age_breakdown:
+            age_breakdown[age_group]["no_selection"] = 0
+        
+        # Process Type D results
+        for result in successful_results:
+            persona = result["persona"]
+            selected_category = result.get("selected_category")
+            
+            # Count category selections
+            if selected_category and selected_category in all_categories:
+                category_counts[selected_category] += 1
+                current_selection = selected_category
+            else:
+                category_counts["no_selection"] += 1
+                current_selection = "no_selection"
+            
+            # Extract demographics for Type D
+            raw_data = persona.get("raw_data", {})
+            gender = raw_data.get("성별", "Unknown")
+            age = raw_data.get("연령대", "Unknown")
+            
+            # Map age format for Type D
+            age_mapping = {
+                "만 19~29세": "20대",
+                "만 30~39세": "30대", 
+                "만 40~49세": "40대",
+                "만 50~59세": "50대",
+                "만 60~69세": "60대",
+                "만 70세 이상": "70대 이상"
+            }
+            age = age_mapping.get(age, age)
+            
+            # Count by gender
+            if gender in gender_breakdown and current_selection in gender_breakdown[gender]:
+                gender_breakdown[gender][current_selection] += 1
+            
+            # Count by age
+            if age in age_breakdown and current_selection in age_breakdown[age]:
+                age_breakdown[age][current_selection] += 1
+        
+        total_selections = len(successful_results)
+        
+        # Calculate category selection analysis
+        category_analysis = {}
+        for category in list(all_categories) + ["no_selection"]:
+            count = category_counts[category]
+            percentage = (count / total_selections * 100) if total_selections > 0 else 0
+            
+            category_analysis[category] = {
+                "count": count,
+                "percentage": round(percentage, 2),
+                "selection_rate": round(count / total_selections, 4) if total_selections > 0 else 0
+            }
+        
+        # Calculate rates for demographic breakdowns
+        def calculate_demographic_rates(breakdown_dict):
+            rates = {}
+            for demographic, category_counts_demo in breakdown_dict.items():
+                total_demographic = sum(category_counts_demo.values())
+                rates[demographic] = {
+                    "total_selections": total_demographic,
+                    "categories": {}
+                }
+                
+                for category, count in category_counts_demo.items():
+                    rates[demographic]["categories"][category] = {
+                        "count": count,
+                        "percentage": round((count / total_demographic * 100) if total_demographic > 0 else 0, 2),
+                        "selection_rate": round(count / total_demographic, 4) if total_demographic > 0 else 0
+                    }
+            return rates
+        
+        summary = {
+            "simulation_type": "D",
+            "total_personas": len(results),
+            "successful_simulations": len(successful_results),
+            "failed_simulations": len(results) - len(successful_results),
+            "participant_uids": participant_uids,
+            "category_analysis": category_analysis,
+            "demographic_breakdown": {
+                "by_gender": calculate_demographic_rates(gender_breakdown),
+                "by_age": calculate_demographic_rates(age_breakdown)
             },
             "statistics": simulation_stats
         }
@@ -483,8 +630,10 @@ class SimulationReporter:
             self._print_type_a_summary(summary)
         elif simulation_type == "B":
             self._print_type_b_summary(summary)
-        else:  # Type C
+        elif simulation_type == "C":
             self._print_type_c_summary(summary)
+        else:  # Type D
+            self._print_type_d_summary(summary)
     
     def _print_type_a_summary(self, summary: Dict[str, Any]) -> None:
         """Print Type A specific summary."""
@@ -571,3 +720,31 @@ class SimulationReporter:
         for age, data in summary['demographic_breakdown']['by_age'].items():
             logger.info(f"  {age}: Conversion={data['conversion']}, No Conversion={data['no_conversion']}, "
                        f"Rate={data['conversion_rate']:.2%}")
+    
+    def _print_type_d_summary(self, summary: Dict[str, Any]) -> None:
+        """Print Type D specific summary with TypeD category selection analysis."""
+        # Category selection overview
+        logger.info("\n=== CATEGORY SELECTION ANALYSIS ===")
+        category_analysis = summary['category_analysis']
+        
+        for category, data in category_analysis.items():
+            logger.info(f"{category}: {data['count']} selections ({data['percentage']:.1f}%)")
+        
+        # Display demographic breakdowns
+        logger.info("\n=== DEMOGRAPHIC BREAKDOWN ===")
+        
+        # Gender breakdown
+        logger.info("Gender Analysis:")
+        for gender, data in summary['demographic_breakdown']['by_gender'].items():
+            logger.info(f"  {gender} (Total: {data['total_selections']}):")
+            for category, category_data in data['categories'].items():
+                if category_data['count'] > 0:
+                    logger.info(f"    {category}: {category_data['count']} ({category_data['percentage']:.1f}%)")
+        
+        # Age breakdown
+        logger.info("Age Analysis:")
+        for age, data in summary['demographic_breakdown']['by_age'].items():
+            logger.info(f"  {age} (Total: {data['total_selections']}):")
+            for category, category_data in data['categories'].items():
+                if category_data['count'] > 0:
+                    logger.info(f"    {category}: {category_data['count']} ({category_data['percentage']:.1f}%)")
