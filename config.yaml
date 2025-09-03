@@ -14,7 +14,7 @@ simulation:
 paths:
   persona_data_dir: "data"
   product_data_dir: "data/product_info"
-  results_dir: "results"
+  results_dir: "results2"
   prompt_file: "prompt.yaml"
 
 # Persona Configuration
@@ -29,7 +29,7 @@ persona:
 
 # Product Configuration
 product:
-  filename: "참치캔"  # Product info filename in data/product_info/ (.json extension will be auto-added)
+  filename: "동원참치액_진"  # Product info filename in data/product_info/ (.json extension will be auto-added)
 
 # OpenAI API Configuration
 openai:

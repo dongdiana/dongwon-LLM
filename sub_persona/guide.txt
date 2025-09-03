@@ -1,0 +1,2 @@
+path: {master}/
+python sub_persona/create_sub_personas.py sub_persona/simulation_results_동원참치액_D.json persona/참치액.json --output_dir sub_persona
