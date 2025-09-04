@@ -80,6 +80,95 @@ The system will:
 4. Execute single questions (Type A), multi-question sessions (Type B), or conversion analysis (Type C)
 5. Generate and save detailed results with demographic analysis and conversion rates
 
+
+## Persona Generation CLI (`generate_personas`)
+
+> Move into the CLI folder first:
+```bash
+cd generate_persona
+```
+
+### Multiple Choice(MC) Mode
+
+The **MC mode** generates personas based primarily on **overall market context** (demographics + market report) for a given product group.  
+It is suitable for products where **broad consumer traits** are more relevant than individual prior brand usage.  
+
+**Applicable product groups:** `참치액`, `참치캔`
+
+```powershell
+python .\generate_personas.py `
+  --mode mc `
+  --keywords 참치액 `
+  --n_samples 1000 `
+  --batch_size 10 `
+  --model gpt-4o-mini `
+  --temperature 0.2 `
+  --log_level DEBUG `
+  --log_prompts `
+  --prompt_preview_chars 600
+```
+
+```powershell
+python .\generate_personas.py `
+  --mode mc `
+  --keywords 참치캔 `
+  --n_samples 1000 `
+  --batch_size 10 `
+  --model gpt-4o-mini `
+  --temperature 0.2 `
+  --log_level DEBUG `
+  --log_prompts `
+  --prompt_preview_chars 600
+```
+
+### SWAP(SW) Mode
+
+The **SWAP mode** generates personas by combining **overall market context** with **prior product/brand usage patterns**.
+This mode enriches personas with substitution/switching behavior and is more suitable for categories with **brand competition**.
+
+**Applicable product groups:** `그릭요거트`, `편의점커피라떼`, `스팸`
+
+```powershell
+python .\generate_personas.py `
+  --mode swap `
+  --keywords 그릭요거트 `
+  --n_samples 1000 `
+  --batch_size 10 `
+  --model gpt-4o-mini `
+  --temperature 0.2 `
+  --log_level DEBUG `
+  --log_prompts `
+  --prompt_preview_chars 600
+```
+
+```powershell
+python .\generate_personas.py `
+  --mode swap `
+  --keywords 편의점커피라떼 `
+  --n_samples 1000 `
+  --batch_size 10 `
+  --model gpt-4o-mini `
+  --temperature 0.2 `
+  --log_level DEBUG `
+  --log_prompts `
+  --prompt_preview_chars 600
+```
+
+```powershell
+python .\generate_personas.py `
+  --mode swap `
+  --keywords 스팸 `
+  --n_samples 1000 `
+  --batch_size 10 `
+  --model gpt-4o-mini `
+  --temperature 0.2 `
+  --log_level DEBUG `
+  --log_prompts `
+  --prompt_preview_chars 600
+```
+
+
+
 ## Rate Limiting
 
 To prevent API rate limit issues, the system automatically applies pacing:
