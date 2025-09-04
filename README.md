@@ -85,7 +85,7 @@ The system will:
 
 > Move into the CLI folder first:
 ```bash
-cd generate_persona
+cd generate_personas
 ```
 
 ### Multiple Choice(MC) Mode

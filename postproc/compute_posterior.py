@@ -99,7 +99,7 @@ def parse_args() -> argparse.Namespace:
     )
     p.add_argument(
         "--out-dir",
-        default="./generate_persona/weights",
+        default="./generate_personas/weights",
         help="사후확률 출력 폴더 경로",
     )
     p.add_argument(
