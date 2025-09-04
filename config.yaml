@@ -29,7 +29,7 @@ persona:
 
 # Product Configuration
 product:
-  filename: "동원참치액_순"  # Product info filename in data/product_info/ (.json extension will be auto-added)
+  filename: "동원참치액_프리미엄"  # Product info filename in data/product_info/ (.json extension will be auto-added)
 
 # OpenAI API Configuration
 openai:
