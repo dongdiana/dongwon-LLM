@@ -1,0 +1,103 @@
+{
+  "simulation_type": "C",
+  "total_personas": 1000,
+  "successful_simulations": 1000,
+  "failed_simulations": 0,
+  "conversion_decisions": {
+    "no_conversion": 663,
+    "conversion": 337,
+    "invalid_responses": 0
+  },
+  "overall_conversion_rate": 0.337,
+  "conversion_by_current_product": {
+    "매일유업 바리스타룰스 바닐라빈라떼 325ml": {
+      "no_conversion": 651,
+      "conversion": 307,
+      "invalid_responses": 0,
+      "total_valid": 958,
+      "conversion_rate": 0.32045929018789143,
+      "conversion_percentage": 32.05
+    },
+    "이디야커피 바닐라라떼 300ml": {
+      "no_conversion": 12,
+      "conversion": 30,
+      "invalid_responses": 0,
+      "total_valid": 42,
+      "conversion_rate": 0.7142857142857143,
+      "conversion_percentage": 71.43
+    }
+  },
+  "demographic_breakdown": {
+    "by_gender": {
+      "남성": {
+        "no_conversion": 365,
+        "conversion": 133,
+        "invalid_responses": 0,
+        "total_valid": 498,
+        "conversion_rate": 0.26706827309236947
+      },
+      "여성": {
+        "no_conversion": 298,
+        "conversion": 204,
+        "invalid_responses": 0,
+        "total_valid": 502,
+        "conversion_rate": 0.4063745019920319
+      }
+    },
+    "by_age": {
+      "20대": {
+        "no_conversion": 77,
+        "conversion": 103,
+        "invalid_responses": 0,
+        "total_valid": 180,
+        "conversion_rate": 0.5722222222222222
+      },
+      "30대": {
+        "no_conversion": 106,
+        "conversion": 79,
+        "invalid_responses": 0,
+        "total_valid": 185,
+        "conversion_rate": 0.42702702702702705
+      },
+      "40대": {
+        "no_conversion": 165,
+        "conversion": 66,
+        "invalid_responses": 0,
+        "total_valid": 231,
+        "conversion_rate": 0.2857142857142857
+      },
+      "50대": {
+        "no_conversion": 203,
+        "conversion": 73,
+        "invalid_responses": 0,
+        "total_valid": 276,
+        "conversion_rate": 0.2644927536231884
+      },
+      "60대": {
+        "no_conversion": 92,
+        "conversion": 15,
+        "invalid_responses": 0,
+        "total_valid": 107,
+        "conversion_rate": 0.14018691588785046
+      },
+      "70대 이상": {
+        "no_conversion": 20,
+        "conversion": 1,
+        "invalid_responses": 0,
+        "total_valid": 21,
+        "conversion_rate": 0.047619047619047616
+      }
+    }
+  },
+  "statistics": {
+    "total_personas": 1000,
+    "successful_simulations": 1000,
+    "failed_simulations": 0,
+    "purchase_decisions": {
+      "0": 663,
+      "1": 337
+    },
+    "start_time": "2025-09-01T00:03:32.096067",
+    "end_time": "2025-09-01T00:09:36.555217"
+  }
+}

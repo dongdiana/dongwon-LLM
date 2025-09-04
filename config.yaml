@@ -25,11 +25,11 @@ persona:
   # Type B & C: Uses JSON file from persona/ directory
   # File path: persona/{product.filename}.json - Uses product filename automatically
   
-  sample_size: 0  # Number of personas to randomly sample (0 = use all personas)
+  sample_size: 100  # Number of personas to randomly sample (0 = use all personas)
 
 # Product Configuration
 product:
-  filename: "동원참치액_프리미엄"  # Product info filename in data/product_info/ (.json extension will be auto-added)
+  filename: "참치캔"  # Product info filename in data/product_info/ (.json extension will be auto-added)
 
 # OpenAI API Configuration
 openai:

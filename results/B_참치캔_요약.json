@@ -1,0 +1,200 @@
+{
+  "simulation_type": "B",
+  "total_personas": 1000,
+  "successful_simulations": 1000,
+  "failed_simulations": 0,
+  "product_analysis": {
+    "동원맛참 매콤참기름": {
+      "count": 742,
+      "percentage": 74.2,
+      "selection_rate": 0.742
+    },
+    "사조 고추할라피뇨참치": {
+      "count": 258,
+      "percentage": 25.8,
+      "selection_rate": 0.258
+    },
+    "no_selection": {
+      "count": 0,
+      "percentage": 0.0,
+      "selection_rate": 0.0
+    }
+  },
+  "demographic_breakdown": {
+    "by_gender": {
+      "남성": {
+        "total_selections": 512,
+        "products": {
+          "동원맛참 매콤참기름": {
+            "count": 403,
+            "percentage": 78.71,
+            "selection_rate": 0.7871
+          },
+          "사조 고추할라피뇨참치": {
+            "count": 109,
+            "percentage": 21.29,
+            "selection_rate": 0.2129
+          },
+          "no_selection": {
+            "count": 0,
+            "percentage": 0.0,
+            "selection_rate": 0.0
+          }
+        }
+      },
+      "여성": {
+        "total_selections": 488,
+        "products": {
+          "동원맛참 매콤참기름": {
+            "count": 339,
+            "percentage": 69.47,
+            "selection_rate": 0.6947
+          },
+          "사조 고추할라피뇨참치": {
+            "count": 149,
+            "percentage": 30.53,
+            "selection_rate": 0.3053
+          },
+          "no_selection": {
+            "count": 0,
+            "percentage": 0.0,
+            "selection_rate": 0.0
+          }
+        }
+      }
+    },
+    "by_age": {
+      "20대": {
+        "total_selections": 157,
+        "products": {
+          "동원맛참 매콤참기름": {
+            "count": 99,
+            "percentage": 63.06,
+            "selection_rate": 0.6306
+          },
+          "사조 고추할라피뇨참치": {
+            "count": 58,
+            "percentage": 36.94,
+            "selection_rate": 0.3694
+          },
+          "no_selection": {
+            "count": 0,
+            "percentage": 0.0,
+            "selection_rate": 0.0
+          }
+        }
+      },
+      "30대": {
+        "total_selections": 175,
+        "products": {
+          "동원맛참 매콤참기름": {
+            "count": 119,
+            "percentage": 68.0,
+            "selection_rate": 0.68
+          },
+          "사조 고추할라피뇨참치": {
+            "count": 56,
+            "percentage": 32.0,
+            "selection_rate": 0.32
+          },
+          "no_selection": {
+            "count": 0,
+            "percentage": 0.0,
+            "selection_rate": 0.0
+          }
+        }
+      },
+      "40대": {
+        "total_selections": 210,
+        "products": {
+          "동원맛참 매콤참기름": {
+            "count": 170,
+            "percentage": 80.95,
+            "selection_rate": 0.8095
+          },
+          "사조 고추할라피뇨참치": {
+            "count": 40,
+            "percentage": 19.05,
+            "selection_rate": 0.1905
+          },
+          "no_selection": {
+            "count": 0,
+            "percentage": 0.0,
+            "selection_rate": 0.0
+          }
+        }
+      },
+      "50대": {
+        "total_selections": 252,
+        "products": {
+          "동원맛참 매콤참기름": {
+            "count": 209,
+            "percentage": 82.94,
+            "selection_rate": 0.8294
+          },
+          "사조 고추할라피뇨참치": {
+            "count": 43,
+            "percentage": 17.06,
+            "selection_rate": 0.1706
+          },
+          "no_selection": {
+            "count": 0,
+            "percentage": 0.0,
+            "selection_rate": 0.0
+          }
+        }
+      },
+      "60대": {
+        "total_selections": 146,
+        "products": {
+          "동원맛참 매콤참기름": {
+            "count": 101,
+            "percentage": 69.18,
+            "selection_rate": 0.6918
+          },
+          "사조 고추할라피뇨참치": {
+            "count": 45,
+            "percentage": 30.82,
+            "selection_rate": 0.3082
+          },
+          "no_selection": {
+            "count": 0,
+            "percentage": 0.0,
+            "selection_rate": 0.0
+          }
+        }
+      },
+      "70대 이상": {
+        "total_selections": 60,
+        "products": {
+          "동원맛참 매콤참기름": {
+            "count": 44,
+            "percentage": 73.33,
+            "selection_rate": 0.7333
+          },
+          "사조 고추할라피뇨참치": {
+            "count": 16,
+            "percentage": 26.67,
+            "selection_rate": 0.2667
+          },
+          "no_selection": {
+            "count": 0,
+            "percentage": 0.0,
+            "selection_rate": 0.0
+          }
+        }
+      }
+    }
+  },
+  "statistics": {
+    "total_personas": 1000,
+    "successful_simulations": 1000,
+    "failed_simulations": 0,
+    "purchase_decisions": {
+      "0": 0,
+      "1": 0
+    },
+    "start_time": "2025-09-01T00:12:33.532795",
+    "end_time": "2025-09-01T00:18:00.366208"
+  }
+}

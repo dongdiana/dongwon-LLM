@@ -1,0 +1,245 @@
+{
+  "simulation_type": "B",
+  "total_personas": 1000,
+  "successful_simulations": 1000,
+  "failed_simulations": 0,
+  "product_analysis": {
+    "동원참치액": {
+      "count": 487,
+      "percentage": 48.7,
+      "selection_rate": 0.487
+    },
+    "사조참치액": {
+      "count": 263,
+      "percentage": 26.3,
+      "selection_rate": 0.263
+    },
+    "한라참치액": {
+      "count": 250,
+      "percentage": 25.0,
+      "selection_rate": 0.25
+    },
+    "no_selection": {
+      "count": 0,
+      "percentage": 0.0,
+      "selection_rate": 0.0
+    }
+  },
+  "demographic_breakdown": {
+    "by_gender": {
+      "남성": {
+        "total_selections": 456,
+        "products": {
+          "동원참치액": {
+            "count": 230,
+            "percentage": 50.44,
+            "selection_rate": 0.5044
+          },
+          "사조참치액": {
+            "count": 121,
+            "percentage": 26.54,
+            "selection_rate": 0.2654
+          },
+          "한라참치액": {
+            "count": 105,
+            "percentage": 23.03,
+            "selection_rate": 0.2303
+          },
+          "no_selection": {
+            "count": 0,
+            "percentage": 0.0,
+            "selection_rate": 0.0
+          }
+        }
+      },
+      "여성": {
+        "total_selections": 544,
+        "products": {
+          "동원참치액": {
+            "count": 257,
+            "percentage": 47.24,
+            "selection_rate": 0.4724
+          },
+          "사조참치액": {
+            "count": 142,
+            "percentage": 26.1,
+            "selection_rate": 0.261
+          },
+          "한라참치액": {
+            "count": 145,
+            "percentage": 26.65,
+            "selection_rate": 0.2665
+          },
+          "no_selection": {
+            "count": 0,
+            "percentage": 0.0,
+            "selection_rate": 0.0
+          }
+        }
+      }
+    },
+    "by_age": {
+      "20대": {
+        "total_selections": 122,
+        "products": {
+          "동원참치액": {
+            "count": 60,
+            "percentage": 49.18,
+            "selection_rate": 0.4918
+          },
+          "사조참치액": {
+            "count": 34,
+            "percentage": 27.87,
+            "selection_rate": 0.2787
+          },
+          "한라참치액": {
+            "count": 28,
+            "percentage": 22.95,
+            "selection_rate": 0.2295
+          },
+          "no_selection": {
+            "count": 0,
+            "percentage": 0.0,
+            "selection_rate": 0.0
+          }
+        }
+      },
+      "30대": {
+        "total_selections": 176,
+        "products": {
+          "동원참치액": {
+            "count": 72,
+            "percentage": 40.91,
+            "selection_rate": 0.4091
+          },
+          "사조참치액": {
+            "count": 50,
+            "percentage": 28.41,
+            "selection_rate": 0.2841
+          },
+          "한라참치액": {
+            "count": 54,
+            "percentage": 30.68,
+            "selection_rate": 0.3068
+          },
+          "no_selection": {
+            "count": 0,
+            "percentage": 0.0,
+            "selection_rate": 0.0
+          }
+        }
+      },
+      "40대": {
+        "total_selections": 194,
+        "products": {
+          "동원참치액": {
+            "count": 95,
+            "percentage": 48.97,
+            "selection_rate": 0.4897
+          },
+          "사조참치액": {
+            "count": 55,
+            "percentage": 28.35,
+            "selection_rate": 0.2835
+          },
+          "한라참치액": {
+            "count": 44,
+            "percentage": 22.68,
+            "selection_rate": 0.2268
+          },
+          "no_selection": {
+            "count": 0,
+            "percentage": 0.0,
+            "selection_rate": 0.0
+          }
+        }
+      },
+      "50대": {
+        "total_selections": 233,
+        "products": {
+          "동원참치액": {
+            "count": 125,
+            "percentage": 53.65,
+            "selection_rate": 0.5365
+          },
+          "사조참치액": {
+            "count": 57,
+            "percentage": 24.46,
+            "selection_rate": 0.2446
+          },
+          "한라참치액": {
+            "count": 51,
+            "percentage": 21.89,
+            "selection_rate": 0.2189
+          },
+          "no_selection": {
+            "count": 0,
+            "percentage": 0.0,
+            "selection_rate": 0.0
+          }
+        }
+      },
+      "60대": {
+        "total_selections": 178,
+        "products": {
+          "동원참치액": {
+            "count": 94,
+            "percentage": 52.81,
+            "selection_rate": 0.5281
+          },
+          "사조참치액": {
+            "count": 41,
+            "percentage": 23.03,
+            "selection_rate": 0.2303
+          },
+          "한라참치액": {
+            "count": 43,
+            "percentage": 24.16,
+            "selection_rate": 0.2416
+          },
+          "no_selection": {
+            "count": 0,
+            "percentage": 0.0,
+            "selection_rate": 0.0
+          }
+        }
+      },
+      "70대 이상": {
+        "total_selections": 97,
+        "products": {
+          "동원참치액": {
+            "count": 41,
+            "percentage": 42.27,
+            "selection_rate": 0.4227
+          },
+          "사조참치액": {
+            "count": 26,
+            "percentage": 26.8,
+            "selection_rate": 0.268
+          },
+          "한라참치액": {
+            "count": 30,
+            "percentage": 30.93,
+            "selection_rate": 0.3093
+          },
+          "no_selection": {
+            "count": 0,
+            "percentage": 0.0,
+            "selection_rate": 0.0
+          }
+        }
+      }
+    }
+  },
+  "statistics": {
+    "total_personas": 1000,
+    "successful_simulations": 1000,
+    "failed_simulations": 0,
+    "purchase_decisions": {
+      "0": 0,
+      "1": 0
+    },
+    "start_time": "2025-08-31T11:41:45.523576",
+    "end_time": "2025-08-31T12:03:41.616720"
+  }
+}

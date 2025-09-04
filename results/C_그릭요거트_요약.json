@@ -1,0 +1,111 @@
+{
+  "simulation_type": "C",
+  "total_personas": 1000,
+  "successful_simulations": 1000,
+  "failed_simulations": 0,
+  "conversion_decisions": {
+    "no_conversion": 917,
+    "conversion": 83,
+    "invalid_responses": 0
+  },
+  "overall_conversion_rate": 0.083,
+  "conversion_by_current_product": {
+    "풀무원 그릭요거트 400g": {
+      "no_conversion": 348,
+      "conversion": 73,
+      "invalid_responses": 0,
+      "total_valid": 421,
+      "conversion_rate": 0.17339667458432304,
+      "conversion_percentage": 17.34
+    },
+    "그릭데이 시그니처 450g": {
+      "no_conversion": 161,
+      "conversion": 1,
+      "invalid_responses": 0,
+      "total_valid": 162,
+      "conversion_rate": 0.006172839506172839,
+      "conversion_percentage": 0.62
+    },
+    "매일바이오 그릭요거트 400g": {
+      "no_conversion": 408,
+      "conversion": 9,
+      "invalid_responses": 0,
+      "total_valid": 417,
+      "conversion_rate": 0.02158273381294964,
+      "conversion_percentage": 2.16
+    }
+  },
+  "demographic_breakdown": {
+    "by_gender": {
+      "남성": {
+        "no_conversion": 421,
+        "conversion": 24,
+        "invalid_responses": 0,
+        "total_valid": 445,
+        "conversion_rate": 0.05393258426966292
+      },
+      "여성": {
+        "no_conversion": 496,
+        "conversion": 59,
+        "invalid_responses": 0,
+        "total_valid": 555,
+        "conversion_rate": 0.1063063063063063
+      }
+    },
+    "by_age": {
+      "20대": {
+        "no_conversion": 148,
+        "conversion": 35,
+        "invalid_responses": 0,
+        "total_valid": 183,
+        "conversion_rate": 0.1912568306010929
+      },
+      "30대": {
+        "no_conversion": 173,
+        "conversion": 29,
+        "invalid_responses": 0,
+        "total_valid": 202,
+        "conversion_rate": 0.14356435643564355
+      },
+      "40대": {
+        "no_conversion": 218,
+        "conversion": 11,
+        "invalid_responses": 0,
+        "total_valid": 229,
+        "conversion_rate": 0.048034934497816595
+      },
+      "50대": {
+        "no_conversion": 268,
+        "conversion": 7,
+        "invalid_responses": 0,
+        "total_valid": 275,
+        "conversion_rate": 0.025454545454545455
+      },
+      "60대": {
+        "no_conversion": 77,
+        "conversion": 1,
+        "invalid_responses": 0,
+        "total_valid": 78,
+        "conversion_rate": 0.01282051282051282
+      },
+      "70대 이상": {
+        "no_conversion": 33,
+        "conversion": 0,
+        "invalid_responses": 0,
+        "total_valid": 33,
+        "conversion_rate": 0.0
+      }
+    }
+  },
+  "statistics": {
+    "total_personas": 1000,
+    "successful_simulations": 1000,
+    "failed_simulations": 0,
+    "purchase_decisions": {
+      "0": 917,
+      "1": 83
+    },
+    "start_time": "2025-09-01T01:26:42.281765",
+    "end_time": "2025-09-01T01:32:55.475131"
+  }
+}

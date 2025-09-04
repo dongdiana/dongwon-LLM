@@ -1,0 +1,267 @@
+{
+  "simulation_type": "D",
+  "total_personas": 65,
+  "successful_simulations": 65,
+  "failed_simulations": 0,
+  "participant_uids": [
+    "555581",
+    "206808",
+    "979344",
+    "179449",
+    "776748",
+    "881661",
+    "799914",
+    "431409",
+    "272167",
+    "995197",
+    "899568",
+    "397950",
+    "194116",
+    "581850",
+    "589730",
+    "807873",
+    "163583",
+    "172239",
+    "830793",
+    "426864",
+    "383739",
+    "013675",
+    "936427",
+    "273558",
+    "836126",
+    "294732",
+    "776043",
+    "948145",
+    "988282",
+    "846562",
+    "932419",
+    "441504",
+    "534733",
+    "169465",
+    "382494",
+    "274154",
+    "689789",
+    "544540",
+    "909178",
+    "428733",
+    "919250",
+    "142289",
+    "621356",
+    "572966",
+    "537507",
+    "811369",
+    "408499",
+    "599670",
+    "241788",
+    "479160",
+    "102758",
+    "821228",
+    "393319",
+    "050075",
+    "244755",
+    "654235",
+    "821432",
+    "022144",
+    "555653",
+    "846690",
+    "655652",
+    "147369",
+    "568854",
+    "346667",
+    "005897"
+  ],
+  "category_analysis": {
+    "동원참치액 프리미엄 500g": {
+      "count": 54,
+      "percentage": 83.08,
+      "selection_rate": 0.8308
+    },
+    "동원참치액 프리미엄 900g": {
+      "count": 11,
+      "percentage": 16.92,
+      "selection_rate": 0.1692
+    },
+    "no_selection": {
+      "count": 0,
+      "percentage": 0.0,
+      "selection_rate": 0.0
+    }
+  },
+  "demographic_breakdown": {
+    "by_gender": {
+      "남성": {
+        "total_selections": 35,
+        "categories": {
+          "동원참치액 프리미엄 500g": {
+            "count": 26,
+            "percentage": 74.29,
+            "selection_rate": 0.7429
+          },
+          "동원참치액 프리미엄 900g": {
+            "count": 9,
+            "percentage": 25.71,
+            "selection_rate": 0.2571
+          },
+          "no_selection": {
+            "count": 0,
+            "percentage": 0.0,
+            "selection_rate": 0.0
+          }
+        }
+      },
+      "여성": {
+        "total_selections": 30,
+        "categories": {
+          "동원참치액 프리미엄 500g": {
+            "count": 28,
+            "percentage": 93.33,
+            "selection_rate": 0.9333
+          },
+          "동원참치액 프리미엄 900g": {
+            "count": 2,
+            "percentage": 6.67,
+            "selection_rate": 0.0667
+          },
+          "no_selection": {
+            "count": 0,
+            "percentage": 0.0,
+            "selection_rate": 0.0
+          }
+        }
+      }
+    },
+    "by_age": {
+      "20대": {
+        "total_selections": 2,
+        "categories": {
+          "동원참치액 프리미엄 500g": {
+            "count": 2,
+            "percentage": 100.0,
+            "selection_rate": 1.0
+          },
+          "동원참치액 프리미엄 900g": {
+            "count": 0,
+            "percentage": 0.0,
+            "selection_rate": 0.0
+          },
+          "no_selection": {
+            "count": 0,
+            "percentage": 0.0,
+            "selection_rate": 0.0
+          }
+        }
+      },
+      "30대": {
+        "total_selections": 6,
+        "categories": {
+          "동원참치액 프리미엄 500g": {
+            "count": 6,
+            "percentage": 100.0,
+            "selection_rate": 1.0
+          },
+          "동원참치액 프리미엄 900g": {
+            "count": 0,
+            "percentage": 0.0,
+            "selection_rate": 0.0
+          },
+          "no_selection": {
+            "count": 0,
+            "percentage": 0.0,
+            "selection_rate": 0.0
+          }
+        }
+      },
+      "40대": {
+        "total_selections": 15,
+        "categories": {
+          "동원참치액 프리미엄 500g": {
+            "count": 13,
+            "percentage": 86.67,
+            "selection_rate": 0.8667
+          },
+          "동원참치액 프리미엄 900g": {
+            "count": 2,
+            "percentage": 13.33,
+            "selection_rate": 0.1333
+          },
+          "no_selection": {
+            "count": 0,
+            "percentage": 0.0,
+            "selection_rate": 0.0
+          }
+        }
+      },
+      "50대": {
+        "total_selections": 18,
+        "categories": {
+          "동원참치액 프리미엄 500g": {
+            "count": 15,
+            "percentage": 83.33,
+            "selection_rate": 0.8333
+          },
+          "동원참치액 프리미엄 900g": {
+            "count": 3,
+            "percentage": 16.67,
+            "selection_rate": 0.1667
+          },
+          "no_selection": {
+            "count": 0,
+            "percentage": 0.0,
+            "selection_rate": 0.0
+          }
+        }
+      },
+      "60대": {
+        "total_selections": 16,
+        "categories": {
+          "동원참치액 프리미엄 500g": {
+            "count": 13,
+            "percentage": 81.25,
+            "selection_rate": 0.8125
+          },
+          "동원참치액 프리미엄 900g": {
+            "count": 3,
+            "percentage": 18.75,
+            "selection_rate": 0.1875
+          },
+          "no_selection": {
+            "count": 0,
+            "percentage": 0.0,
+            "selection_rate": 0.0
+          }
+        }
+      },
+      "70대 이상": {
+        "total_selections": 8,
+        "categories": {
+          "동원참치액 프리미엄 500g": {
+            "count": 5,
+            "percentage": 62.5,
+            "selection_rate": 0.625
+          },
+          "동원참치액 프리미엄 900g": {
+            "count": 3,
+            "percentage": 37.5,
+            "selection_rate": 0.375
+          },
+          "no_selection": {
+            "count": 0,
+            "percentage": 0.0,
+            "selection_rate": 0.0
+          }
+        }
+      }
+    }
+  },
+  "statistics": {
+    "total_personas": 65,
+    "successful_simulations": 65,
+    "failed_simulations": 0,
+    "purchase_decisions": {
+      "0": 0,
+      "1": 0
+    },
+    "start_time": "2025-09-05T00:30:55.239022",
+    "end_time": "2025-09-05T00:31:36.682045"
+  }
+}

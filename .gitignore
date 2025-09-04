@@ -1,4 +1,4 @@
-results/*.json
+#results/*.json
 __pycache__/
 .env
 *.log

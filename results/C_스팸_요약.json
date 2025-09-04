@@ -1,0 +1,103 @@
+{
+  "simulation_type": "C",
+  "total_personas": 1000,
+  "successful_simulations": 1000,
+  "failed_simulations": 0,
+  "conversion_decisions": {
+    "no_conversion": 969,
+    "conversion": 31,
+    "invalid_responses": 0
+  },
+  "overall_conversion_rate": 0.031,
+  "conversion_by_current_product": {
+    "스팸 25% 라이트": {
+      "no_conversion": 745,
+      "conversion": 0,
+      "invalid_responses": 0,
+      "total_valid": 745,
+      "conversion_rate": 0.0,
+      "conversion_percentage": 0.0
+    },
+    "리챔 더블라이트": {
+      "no_conversion": 224,
+      "conversion": 31,
+      "invalid_responses": 0,
+      "total_valid": 255,
+      "conversion_rate": 0.12156862745098039,
+      "conversion_percentage": 12.16
+    }
+  },
+  "demographic_breakdown": {
+    "by_gender": {
+      "남성": {
+        "no_conversion": 490,
+        "conversion": 12,
+        "invalid_responses": 0,
+        "total_valid": 502,
+        "conversion_rate": 0.02390438247011952
+      },
+      "여성": {
+        "no_conversion": 479,
+        "conversion": 19,
+        "invalid_responses": 0,
+        "total_valid": 498,
+        "conversion_rate": 0.03815261044176707
+      }
+    },
+    "by_age": {
+      "20대": {
+        "no_conversion": 132,
+        "conversion": 18,
+        "invalid_responses": 0,
+        "total_valid": 150,
+        "conversion_rate": 0.12
+      },
+      "30대": {
+        "no_conversion": 156,
+        "conversion": 8,
+        "invalid_responses": 0,
+        "total_valid": 164,
+        "conversion_rate": 0.04878048780487805
+      },
+      "40대": {
+        "no_conversion": 180,
+        "conversion": 5,
+        "invalid_responses": 0,
+        "total_valid": 185,
+        "conversion_rate": 0.02702702702702703
+      },
+      "50대": {
+        "no_conversion": 219,
+        "conversion": 0,
+        "invalid_responses": 0,
+        "total_valid": 219,
+        "conversion_rate": 0.0
+      },
+      "60대": {
+        "no_conversion": 189,
+        "conversion": 0,
+        "invalid_responses": 0,
+        "total_valid": 189,
+        "conversion_rate": 0.0
+      },
+      "70대 이상": {
+        "no_conversion": 93,
+        "conversion": 0,
+        "invalid_responses": 0,
+        "total_valid": 93,
+        "conversion_rate": 0.0
+      }
+    }
+  },
+  "statistics": {
+    "total_personas": 1000,
+    "successful_simulations": 1000,
+    "failed_simulations": 0,
+    "purchase_decisions": {
+      "0": 969,
+      "1": 31
+    },
+    "start_time": "2025-08-31T18:15:21.384778",
+    "end_time": "2025-08-31T18:36:27.030374"
+  }
+}
